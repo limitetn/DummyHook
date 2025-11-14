@@ -277,10 +277,9 @@ function loadMainScript()
     local SkinCustomizer = loadModule("Features/SkinCustomizer.lua")
     local Notifications = loadModule("Features/Notifications.lua")
     local AdvancedCheats = loadModule("Features/AdvancedCheats.lua")
-    local KeyManager = loadModule("Features/KeyManager.lua")
     
     -- Check if all modules loaded successfully
-    if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats or not KeyManager then
+    if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats then
         warn("[DummyHook] Failed to load one or more modules. Aborting.")
         return
     end
@@ -841,9 +840,6 @@ function loadMainScript()
     
     -- Initialize notifications
     Notifications:Initialize()
-    
-    -- Initialize key manager
-    KeyManager:Initialize()
     
     -- Show welcome notification
     Notifications:Success("DummyHook Loaded", "Press RightShift to open the menu. Enjoy!", 5)
