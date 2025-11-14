@@ -226,7 +226,7 @@ function loadMainScript()
     
     -- GitHub Repository Configuration
     -- REPLACE 'YourGitHubUsername' with your actual GitHub username
-    local GITHUB_USER = "YourGitHubUsername"
+    local GITHUB_USER = "etnson9"
     local GITHUB_REPO = "DummyHook"
     local GITHUB_BRANCH = "main"
     local BASE_URL = string.format("https://raw.githubusercontent.com/%s/%s/%s/", GITHUB_USER, GITHUB_REPO, GITHUB_BRANCH)
