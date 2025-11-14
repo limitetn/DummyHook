@@ -427,7 +427,7 @@ function Misc:SetFakeLag(value)
     end
 end
 
--- Hide Name
+-- Hide Name / Change Name to DummyHook
 function Misc:SetHideName(value)
     self.Settings.HideName = value
     
@@ -437,31 +437,80 @@ function Misc:SetHideName(value)
     local head = character:FindFirstChild("Head")
     if not head then return end
     
-    -- Find all billboards (name tags)
+    -- Method 1: Modify BillboardGui name displays
     for _, obj in pairs(head:GetChildren()) do
         if obj:IsA("BillboardGui") then
-            if value then
-                if not self.OriginalNameDisplay then
-                    self.OriginalNameDisplay = obj.Enabled
-                end
-                obj.Enabled = false
-            else
-                if self.OriginalNameDisplay ~= nil then
-                    obj.Enabled = self.OriginalNameDisplay
+            for _, child in pairs(obj:GetDescendants()) do
+                if child:IsA("TextLabel") then
+                    if value then
+                        if not self.OriginalNameDisplay then
+                            self.OriginalNameDisplay = child.Text
+                        end
+                        child.Text = "DummyHook"
+                    else
+                        if self.OriginalNameDisplay then
+                            child.Text = self.OriginalNameDisplay
+                        end
+                    end
                 end
             end
         end
     end
     
-    -- Also hide overhead name
+    -- Method 2: Change DisplayName (visible to others in new Roblox)
     local humanoid = GetHumanoid()
     if humanoid then
         if value then
-            humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+            if not self.OriginalValues.DisplayName then
+                self.OriginalValues.DisplayName = humanoid.DisplayName
+            end
+            humanoid.DisplayName = "DummyHook"
+        else
+            if self.OriginalValues.DisplayName then
+                humanoid.DisplayName = self.OriginalValues.DisplayName
+            end
+        end
+        
+        -- Also control distance type
+        if value then
+            humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
         else
             humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
         end
     end
+    
+    -- Method 3: Hook nametag rendering (advanced)
+    if value and not self.Connections.NameHook then
+        self.Connections.NameHook = RunService.Heartbeat:Connect(function()
+            pcall(function()
+                local char = GetCharacter()
+                if char then
+                    local h = char:FindFirstChild("Head")
+                    if h then
+                        for _, gui in pairs(h:GetChildren()) do
+                            if gui:IsA("BillboardGui") then
+                                for _, label in pairs(gui:GetDescendants()) do
+                                    if label:IsA("TextLabel") and label.Text ~= "DummyHook" then
+                                        label.Text = "DummyHook"
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    if hum and hum.DisplayName ~= "DummyHook" then
+                        hum.DisplayName = "DummyHook"
+                    end
+                end
+            end)
+        end)
+    elseif not value and self.Connections.NameHook then
+        self.Connections.NameHook:Disconnect()
+        self.Connections.NameHook = nil
+    end
+    
+    print("[Misc] Name " .. (value and "changed to DummyHook" or "restored"))
 end
 
 -- Anti OBS (Screen Capture Protection)
@@ -585,6 +634,9 @@ function Misc:Cleanup()
     self:SetAntiAim(false)
     self:SetBunnyHop(false)
     self:SetFakeLag(false)
+    self:SetHideName(false)
+    self:SetAntiOBS(false)
+    self:SetChatSpam(false)
 end
 
 return Misc

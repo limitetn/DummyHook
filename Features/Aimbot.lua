@@ -328,6 +328,12 @@ end
 local function InitializeAimbot()
     CreateFOVCircle()
     
+    -- Store original namecall for cleanup
+    if not Aimbot.OriginalNamecall then
+        local mt = getrawmetatable(game)
+        Aimbot.OriginalNamecall = mt.__namecall
+    end
+    
     Aimbot.Connections.RenderStep = RunService.RenderStepped:Connect(function()
         UpdateFOVCircle()
         
