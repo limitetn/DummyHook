@@ -134,7 +134,7 @@ function Library:CreateWindow(config)
         Parent = Header
     })
     
-    -- Tab Container
+    -- Tab Container with Scrolling Support
     local TabContainer = CreateElement("Frame", {
         Name = "TabContainer",
         Size = UDim2.new(1, 0, 0, 35),
@@ -144,12 +144,50 @@ function Library:CreateWindow(config)
         Parent = MainFrame
     })
     
+    -- Scroll buttons for tabs
+    local ScrollLeftButton = CreateElement("TextButton", {
+        Name = "ScrollLeft",
+        Size = UDim2.new(0, 20, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
+        BackgroundColor3 = Library.Theme.Secondary,
+        BorderSizePixel = 0,
+        Text = "<",
+        TextColor3 = Library.Theme.Text,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        Parent = TabContainer
+    })
+    
+    local ScrollRightButton = CreateElement("TextButton", {
+        Name = "ScrollRight",
+        Size = UDim2.new(0, 20, 1, 0),
+        Position = UDim2.new(1, -20, 0, 0),
+        BackgroundColor3 = Library.Theme.Secondary,
+        BorderSizePixel = 0,
+        Text = ">",
+        TextColor3 = Library.Theme.Text,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        Parent = TabContainer
+    })
+    
+    local TabScrollFrame = CreateElement("ScrollingFrame", {
+        Name = "TabScrollFrame",
+        Size = UDim2.new(1, -50, 1, 0),
+        Position = UDim2.new(0, 25, 0, 0),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 0,
+        CanvasSize = UDim2.new(0, 0, 1, 0),
+        ScrollingDirection = Enum.ScrollingDirection.X,
+        Parent = TabContainer
+    })
+    
     local TabList = CreateElement("Frame", {
         Name = "TabList",
-        Size = UDim2.new(1, -20, 1, 0),
-        Position = UDim2.new(0, 10, 0, 0),
+        Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
-        Parent = TabContainer
+        Parent = TabScrollFrame
     })
     
     local TabListLayout = CreateElement("UIListLayout", {
@@ -159,6 +197,38 @@ function Library:CreateWindow(config)
         Padding = UDim.new(0, 5),
         Parent = TabList
     })
+    
+    -- Update canvas size when tabs are added
+    TabListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabScrollFrame.CanvasSize = UDim2.new(0, TabListLayout.AbsoluteContentSize.X + 10, 1, 0)
+    end)
+    
+    -- Scroll button functionality
+    ScrollLeftButton.MouseButton1Click:Connect(function()
+        Tween(TabScrollFrame, {CanvasPosition = Vector2.new(math.max(0, TabScrollFrame.CanvasPosition.X - 100), 0)}, 0.3)
+    end)
+    
+    ScrollRightButton.MouseButton1Click:Connect(function()
+        local maxScroll = math.max(0, TabScrollFrame.CanvasSize.X.Offset - TabScrollFrame.AbsoluteSize.X)
+        Tween(TabScrollFrame, {CanvasPosition = Vector2.new(math.min(maxScroll, TabScrollFrame.CanvasPosition.X + 100), 0)}, 0.3)
+    end)
+    
+    -- Hover effects for scroll buttons
+    ScrollLeftButton.MouseEnter:Connect(function()
+        Tween(ScrollLeftButton, {BackgroundColor3 = Library.Theme.Accent}, 0.2)
+    end)
+    
+    ScrollLeftButton.MouseLeave:Connect(function()
+        Tween(ScrollLeftButton, {BackgroundColor3 = Library.Theme.Secondary}, 0.2)
+    end)
+    
+    ScrollRightButton.MouseEnter:Connect(function()
+        Tween(ScrollRightButton, {BackgroundColor3 = Library.Theme.Accent}, 0.2)
+    end)
+    
+    ScrollRightButton.MouseLeave:Connect(function()
+        Tween(ScrollRightButton, {BackgroundColor3 = Library.Theme.Secondary}, 0.2)
+    end)
     
     -- Content Container
     local ContentContainer = CreateElement("Frame", {
@@ -409,8 +479,26 @@ function Library:CreateWindow(config)
                     Parent = ToggleIndicator
                 })
                 
+                -- Hover effects
+                ToggleBox.MouseEnter:Connect(function()
+                    Tween(ToggleBox, {
+                        Size = UDim2.new(0, 37, 0, 20)
+                    }, 0.15)
+                end)
+                
+                ToggleBox.MouseLeave:Connect(function()
+                    Tween(ToggleBox, {
+                        Size = UDim2.new(0, 35, 0, 18)
+                    }, 0.15)
+                end)
+                
                 ToggleBox.MouseButton1Click:Connect(function()
                     Toggle.Value = not Toggle.Value
+                    
+                    -- Scale animation on click
+                    Tween(ToggleBox, {Size = UDim2.new(0, 33, 0, 16)}, 0.1)
+                    task.wait(0.1)
+                    Tween(ToggleBox, {Size = UDim2.new(0, 35, 0, 18)}, 0.1)
                     
                     Tween(ToggleBox, {
                         BackgroundColor3 = Toggle.Value and Library.Theme.Accent or Library.Theme.Tertiary
@@ -511,9 +599,26 @@ function Library:CreateWindow(config)
                         
                         Slider.Value = value
                         ValueLabel.Text = tostring(value)
-                        SliderFill.Size = UDim2.new(percentage, 0, 1, 0)
+                        
+                        -- Smooth fill animation
+                        Tween(SliderFill, {
+                            Size = UDim2.new(percentage, 0, 1, 0)
+                        }, 0.1)
                         
                         callback(value)
+                    end
+                end)
+                
+                -- Hover effect on slider
+                SliderBar.MouseEnter:Connect(function()
+                    Tween(SliderBar, {Size = UDim2.new(1, 0, 0, 6)}, 0.15)
+                    Tween(SliderBar, {Position = UDim2.new(0, 0, 0, 24)}, 0.15)
+                end)
+                
+                SliderBar.MouseLeave:Connect(function()
+                    if not dragging then
+                        Tween(SliderBar, {Size = UDim2.new(1, 0, 0, 4)}, 0.15)
+                        Tween(SliderBar, {Position = UDim2.new(0, 0, 0, 25)}, 0.15)
                     end
                 end)
                 

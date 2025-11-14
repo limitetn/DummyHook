@@ -25,11 +25,15 @@ local Aimbot = {
         StickyAim = false,
         AimAssist = false,
         AimAssistStrength = 30,
+        LockMode = 1, -- 1 = Camera Lock, 2 = Mouse Movement
+        MouseSensitivity = 0.15, -- Lower = smoother mouse movement
+        ShakeReduction = true,
     },
     CurrentTarget = nil,
     FOVCircle = nil,
     Connections = {},
-    LastResolveAngles = {}
+    LastResolveAngles = {},
+    OriginalNamecall = nil
 }
 
 local Players = game:GetService("Players")
@@ -253,18 +257,48 @@ local function AimAt(targetPart)
     end
     
     local targetPos = Aimbot.Settings.Resolver and ResolveTarget(targetPart) or PredictPosition(targetPart)
-    local currentCFrame = Camera.CFrame
-    local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
     
-    -- Apply smoothing
-    local smoothFactor = (100 - Aimbot.Settings.Smoothness) / 100
-    
-    if smoothFactor <= 0.01 then
-        -- Instant lock
-        Camera.CFrame = targetCFrame
-    else
-        -- Smooth aim
-        Camera.CFrame = currentCFrame:Lerp(targetCFrame, smoothFactor)
+    -- Mode 1: Camera Lock (traditional)
+    if Aimbot.Settings.LockMode == 1 then
+        local currentCFrame = Camera.CFrame
+        local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
+        
+        -- Apply smoothing
+        local smoothFactor = (100 - Aimbot.Settings.Smoothness) / 100
+        
+        if smoothFactor <= 0.01 then
+            -- Instant lock
+            Camera.CFrame = targetCFrame
+        else
+            -- Smooth aim with shake reduction
+            if Aimbot.Settings.ShakeReduction then
+                local lerpedCFrame = currentCFrame:Lerp(targetCFrame, smoothFactor)
+                Camera.CFrame = lerpedCFrame
+            else
+                Camera.CFrame = currentCFrame:Lerp(targetCFrame, smoothFactor)
+            end
+        end
+    -- Mode 2: Mouse Movement (more legit)
+    elseif Aimbot.Settings.LockMode == 2 then
+        local screenPos, onScreen = WorldToScreen(targetPos)
+        if not onScreen then return end
+        
+        local mouse = GetMouse()
+        local mousePos = Vector2.new(mouse.X, mouse.Y)
+        local delta = (screenPos - mousePos) * Aimbot.Settings.MouseSensitivity
+        
+        -- Use mousemoverel if available
+        if mousemoverel then
+            mousemoverel(delta.X, delta.Y)
+        elseif mousemoveabs then
+            mousemoveabs(screenPos.X, screenPos.Y)
+        else
+            -- Fallback to camera lock
+            local currentCFrame = Camera.CFrame
+            local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
+            local smoothFactor = (100 - Aimbot.Settings.Smoothness) / 100
+            Camera.CFrame = currentCFrame:Lerp(targetCFrame, smoothFactor)
+        end
     end
 end
 

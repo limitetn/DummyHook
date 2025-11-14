@@ -292,6 +292,15 @@ function loadMainScript()
     AimbotSection:AddToggle("Team Check", true, function(value)
         Aimbot:SetTeamCheck(value)
     end)
+    AimbotSection:AddDropdown("Lock Mode", {"Camera Lock", "Mouse Movement"}, "Camera Lock", function(value)
+        Aimbot.Settings.LockMode = value == "Camera Lock" and 1 or 2
+    end)
+    AimbotSection:AddSlider("Mouse Sensitivity", 0.01, 0.5, 0.15, function(value)
+        Aimbot.Settings.MouseSensitivity = value
+    end)
+    AimbotSection:AddToggle("Shake Reduction", true, function(value)
+        Aimbot.Settings.ShakeReduction = value
+    end)
     
     local AdvancedAimSection = RageTab:CreateSection("Advanced Aim")
     AdvancedAimSection:AddToggle("Silent Aim", false, function(value)
