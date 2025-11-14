@@ -252,6 +252,9 @@ function loadMainScript()
     local GameExploits = loadstring(game:HttpGet(BASE_URL .. "Features/GameExploits.lua"))()
     local PlayerManager = loadstring(game:HttpGet(BASE_URL .. "Features/PlayerManager.lua"))()
     local CharCustomizer = loadstring(game:HttpGet(BASE_URL .. "Features/CharCustomizer.lua"))()
+    local ThemeManager = loadstring(game:HttpGet(BASE_URL .. "Features/ThemeManager.lua"))()
+    local ConfigManager = loadstring(game:HttpGet(BASE_URL .. "Features/ConfigManager.lua"))()
+    local VisualEffects = loadstring(game:HttpGet(BASE_URL .. "Features/VisualEffects.lua"))()
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
@@ -583,17 +586,119 @@ function loadMainScript()
     end)
     
     -- Config Tab
+    ConfigManager:Initialize()
+    
+    local ThemeSection = ConfigTab:CreateSection("Theme Customization")
+    local themeNames = ThemeManager:GetThemeNames()
+    ThemeSection:AddDropdown("Select Theme", themeNames, "Skeet", function(value)
+        ThemeManager:ApplyTheme(value)
+        -- Reload UI with new theme
+        Library.Theme = ThemeManager:GetCurrentTheme()
+    end)
+    
+    ThemeSection:AddToggle("RGB Mode", false, function(value)
+        if value then
+            ThemeManager:StartRGBMode()
+        else
+            ThemeManager:StopRGBMode()
+        end
+    end)
+    
+    ThemeSection:AddSlider("RGB Speed", 0.1, 5, 1, function(value)
+        ThemeManager:SetRGBSpeed(value)
+    end)
+    
+    local VisualFXSection = ConfigTab:CreateSection("Visual Effects")
+    VisualFXSection:AddToggle("RGB Trail", false, function(value)
+        VisualEffects:SetRGBTrail(value)
+    end)
+    
+    VisualFXSection:AddToggle("Glow Effect", false, function(value)
+        VisualEffects:SetGlowEffect(value)
+    end)
+    
+    VisualFXSection:AddToggle("Particles", false, function(value)
+        VisualEffects:SetParticles(value)
+    end)
+    
+    VisualFXSection:AddDropdown("Particle Type", {"Stars", "Sparkles", "Fire", "Magic"}, "Stars", function(value)
+        VisualEffects:SetParticleType(value)
+    end)
+    
+    VisualFXSection:AddToggle("Point Light", false, function(value)
+        VisualEffects:SetPointLight(value)
+    end)
+    
+    VisualFXSection:AddSlider("Effect Intensity", 0.1, 3, 1, function(value)
+        VisualEffects:SetEffectIntensity(value)
+    end)
+    
+    local ProfileSection = ConfigTab:CreateSection("Profile Management")
+    local currentSettings = {}
+    
+    ProfileSection:AddButton("Save Current Profile", function()
+        currentSettings.Aimbot = Aimbot.Settings
+        currentSettings.ESP = ESP.Settings
+        currentSettings.Misc = Misc.Settings
+        currentSettings.Theme = ThemeManager.CurrentTheme
+        ConfigManager:SaveProfile("Default", currentSettings)
+        print("[DummyHook] Profile saved!")
+    end)
+    
+    ProfileSection:AddButton("Load Profile", function()
+        local profile = ConfigManager:LoadProfile("Default")
+        if profile then
+            print("[DummyHook] Profile loaded!")
+        end
+    end)
+    
+    ProfileSection:AddButton("Export to Clipboard", function()
+        currentSettings.Aimbot = Aimbot.Settings
+        currentSettings.ESP = ESP.Settings
+        currentSettings.Misc = Misc.Settings
+        local exported = ConfigManager:ExportConfig("Default")
+        if exported then
+            print("[DummyHook] Config exported to clipboard!")
+        end
+    end)
+    
+    ProfileSection:AddButton("Reset to Defaults", function()
+        ConfigManager:ResetToDefaults()
+        print("[DummyHook] Settings reset to defaults!")
+    end)
+    
     local ConfigSection = ConfigTab:CreateSection("Configuration")
-    ConfigSection:AddButton("Save Config", function()
-        Library:SaveConfig("default")
+    ConfigSection:AddToggle("Auto-Save (60s)", false, function(value)
+        if value then
+            currentSettings.Aimbot = Aimbot.Settings
+            currentSettings.ESP = ESP.Settings
+            currentSettings.Misc = Misc.Settings
+            ConfigManager:EnableAutoSave(60, currentSettings)
+        else
+            ConfigManager:DisableAutoSave()
+        end
     end)
-    ConfigSection:AddButton("Load Config", function()
-        Library:LoadConfig("default")
+    
+    ConfigSection:AddButton("Quick Save", function()
+        currentSettings.Aimbot = Aimbot.Settings
+        currentSettings.ESP = ESP.Settings
+        currentSettings.Misc = Misc.Settings
+        ConfigManager:QuickSave(currentSettings)
+        print("[DummyHook] Quick saved!")
     end)
+    
+    ConfigSection:AddButton("Quick Load", function()
+        local loaded = ConfigManager:QuickLoad()
+        if loaded then
+            print("[DummyHook] Quick loaded!")
+        end
+    end)
+    
     ConfigSection:AddButton("Unload Script", function()
         Library:Unload()
         GameExploits:Cleanup()
         Misc:Cleanup()
+        VisualEffects:Cleanup()
     end)
     
     DummyHook.Loaded = true
