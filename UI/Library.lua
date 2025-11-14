@@ -23,6 +23,59 @@ Library.Theme = {
     Error = Color3.fromRGB(255, 100, 100),
 }
 
+-- Store references to all themeable elements for dynamic updates
+Library.ThemeElements = {}
+
+-- Utility function to register themeable elements
+function Library:RegisterThemeElement(element, property, themeKey)
+    if not self.ThemeElements[themeKey] then
+        self.ThemeElements[themeKey] = {}
+    end
+    table.insert(self.ThemeElements[themeKey], {Element = element, Property = property})
+end
+
+-- Function to update all theme elements
+function Library:UpdateTheme(newTheme)
+    if newTheme then
+        self.Theme = newTheme
+    end
+    
+    -- Update all registered elements
+    for themeKey, elements in pairs(self.ThemeElements) do
+        local color = self.Theme[themeKey]
+        if color then
+            for _, elementData in pairs(elements) do
+                elementData.Element[elementData.Property] = color
+            end
+        end
+    end
+    
+    -- Update main window elements
+    if self.MainFrame then
+        self.MainFrame.BackgroundColor3 = self.Theme.Background
+    end
+    
+    if self.TopBar then
+        self.TopBar.BackgroundColor3 = self.Theme.Accent
+    end
+    
+    if self.Header then
+        self.Header.BackgroundColor3 = self.Theme.Secondary
+    end
+    
+    if self.TabContainer then
+        self.TabContainer.BackgroundColor3 = self.Theme.Tertiary
+    end
+    
+    if self.ScrollLeftButton then
+        self.ScrollLeftButton.BackgroundColor3 = self.Theme.Secondary
+    end
+    
+    if self.ScrollRightButton then
+        self.ScrollRightButton.BackgroundColor3 = self.Theme.Secondary
+    end
+end
+
 -- Utility Functions
 local function CreateElement(className, properties)
     local element = Instance.new(className)
@@ -68,6 +121,8 @@ function Library:CreateWindow(config)
         ClipsDescendants = true,
         Parent = ScreenGui
     })
+    Window.MainFrame = MainFrame -- Store reference for theme updates
+    Library:RegisterThemeElement(MainFrame, "BackgroundColor3", "Background")
     
     -- Top Accent Bar (Rainbow Gradient - Skeet style)
     local TopBar = CreateElement("Frame", {
@@ -77,6 +132,8 @@ function Library:CreateWindow(config)
         BorderSizePixel = 0,
         Parent = MainFrame
     })
+    Window.TopBar = TopBar -- Store reference for theme updates
+    Library:RegisterThemeElement(TopBar, "BackgroundColor3", "Accent")
     
     local Gradient = CreateElement("UIGradient", {
         Color = ColorSequence.new{
@@ -107,6 +164,8 @@ function Library:CreateWindow(config)
         BorderSizePixel = 0,
         Parent = MainFrame
     })
+    Window.Header = Header -- Store reference for theme updates
+    Library:RegisterThemeElement(Header, "BackgroundColor3", "Secondary")
     
     local Title = CreateElement("TextLabel", {
         Name = "Title",
@@ -120,6 +179,7 @@ function Library:CreateWindow(config)
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = Header
     })
+    Library:RegisterThemeElement(Title, "TextColor3", "Text")
     
     local VersionLabel = CreateElement("TextLabel", {
         Name = "Version",
@@ -133,6 +193,7 @@ function Library:CreateWindow(config)
         TextXAlignment = Enum.TextXAlignment.Right,
         Parent = Header
     })
+    Library:RegisterThemeElement(VersionLabel, "TextColor3", "TextDark")
     
     -- Tab Container with Scrolling Support
     local TabContainer = CreateElement("Frame", {
@@ -143,6 +204,8 @@ function Library:CreateWindow(config)
         BorderSizePixel = 0,
         Parent = MainFrame
     })
+    Window.TabContainer = TabContainer -- Store reference for theme updates
+    Library:RegisterThemeElement(TabContainer, "BackgroundColor3", "Tertiary")
     
     -- Scroll buttons for tabs
     local ScrollLeftButton = CreateElement("TextButton", {
@@ -157,6 +220,9 @@ function Library:CreateWindow(config)
         Font = Enum.Font.GothamBold,
         Parent = TabContainer
     })
+    Window.ScrollLeftButton = ScrollLeftButton -- Store reference for theme updates
+    Library:RegisterThemeElement(ScrollLeftButton, "BackgroundColor3", "Secondary")
+    Library:RegisterThemeElement(ScrollLeftButton, "TextColor3", "Text")
     
     local ScrollRightButton = CreateElement("TextButton", {
         Name = "ScrollRight",
@@ -170,6 +236,9 @@ function Library:CreateWindow(config)
         Font = Enum.Font.GothamBold,
         Parent = TabContainer
     })
+    Window.ScrollRightButton = ScrollRightButton -- Store reference for theme updates
+    Library:RegisterThemeElement(ScrollRightButton, "BackgroundColor3", "Secondary")
+    Library:RegisterThemeElement(ScrollRightButton, "TextColor3", "Text")
     
     local TabScrollFrame = CreateElement("ScrollingFrame", {
         Name = "TabScrollFrame",

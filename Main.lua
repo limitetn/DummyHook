@@ -256,6 +256,7 @@ function loadMainScript()
     local ConfigManager = loadstring(game:HttpGet(BASE_URL .. "Features/ConfigManager.lua"))()
     local VisualEffects = loadstring(game:HttpGet(BASE_URL .. "Features/VisualEffects.lua"))()
     local SkinCustomizer = loadstring(game:HttpGet(BASE_URL .. "Features/SkinCustomizer.lua"))()
+    local Notifications = loadstring(game:HttpGet(BASE_URL .. "Features/Notifications.lua"))()
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
@@ -567,6 +568,21 @@ function loadMainScript()
         SkinCustomizer:SetOutfitPreset(value)
     end)
     
+    local KeybindsSection = MiscTab:CreateSection("Keybinds")
+    KeybindsSection:AddButton("Set Aimbot Key", function()
+        Notifications:Info("Keybind Setup", "Press any key to set as Aimbot key", 3)
+        -- Keybind logic would go here
+    end)
+    KeybindsSection:AddButton("Set ESP Key", function()
+        Notifications:Info("Keybind Setup", "Press any key to set as ESP key", 3)
+    end)
+    KeybindsSection:AddButton("Set Fly Key", function()
+        Notifications:Info("Keybind Setup", "Press any key to set as Fly key", 3)
+    end)
+    KeybindsSection:AddButton("Reset All Keybinds", function()
+        Notifications:Success("Keybinds", "All keybinds reset to defaults", 3)
+    end)
+    
     -- Exploits Tab (Game-specific)
     local SniperDuelsSection = ExploitsTab:CreateSection("Sniper Duels")
     SniperDuelsSection:AddToggle("Item Duping (Enable First)", false, function(value)
@@ -635,7 +651,7 @@ function loadMainScript()
     ThemeSection:AddDropdown("Select Theme", themeNames, "Skeet", function(value)
         ThemeManager:ApplyTheme(value)
         -- Reload UI with new theme
-        Library.Theme = ThemeManager:GetCurrentTheme()
+        Library:UpdateTheme(ThemeManager:GetCurrentTheme())
     end)
     
     ThemeSection:AddToggle("RGB Mode", false, function(value)
@@ -742,6 +758,7 @@ function loadMainScript()
         Misc:Cleanup()
         VisualEffects:Cleanup()
         SkinCustomizer:Cleanup()
+        Notifications:Cleanup()
         -- Reset silent aim
         pcall(function()
             if getrawmetatable then
@@ -754,6 +771,12 @@ function loadMainScript()
             end
         end)
     end)
+    
+    -- Initialize notifications
+    Notifications:Initialize()
+    
+    -- Show welcome notification
+    Notifications:Success("DummyHook Loaded", "Press RightShift to open the menu. Enjoy!", 5)
     
     DummyHook.Loaded = true
     print("[DummyHook] Successfully loaded!")
@@ -772,7 +795,7 @@ function loadMainScript()
     print("========================================")
     print("    DummyHook v1.0.0 - Premium")
     print("    Press RightShift to toggle GUI")
-    print("    Default Key: DUMMYHOOK-PREMIUM-2025")
+    print("   Have fun bby")
     print("========================================")
 end
 

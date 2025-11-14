@@ -162,6 +162,8 @@ end
 -- Silent Aim (fires at target without moving camera)
 local SilentAimHooked = false
 local SilentAimTarget = nil
+local OldMouseHit = nil
+local OldMouseTarget = nil
 
 local function ApplySilentAim(targetPart)
     if not Aimbot.Settings.SilentAim then return end
@@ -172,73 +174,108 @@ local function ApplySilentAim(targetPart)
     -- Hook mouse position only once
     if not SilentAimHooked then
         local success = pcall(function()
-            local mt = getrawmetatable(game)
-            setreadonly(mt, false)
-            
-            local oldNamecall = mt.__namecall
-            local oldIndex = mt.__index
-            
-            mt.__namecall = newcclosure(function(self, ...)
-                local method = getnamecallmethod()
-                local args = {...}
-                
-                if SilentAimTarget and Aimbot.Settings.SilentAim then
-                    -- Hook Ray casting
-                    if method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRay" then
-                        local ray = args[1]
-                        if ray then
-                            local newRay = Ray.new(
-                                Camera.CFrame.Position,
-                                (SilentAimTarget.Position - Camera.CFrame.Position).Unit * 1000
-                            )
-                            args[1] = newRay
-                        end
+            -- Try hookmetamethod first (more modern approach)
+            if hookmetamethod then
+                local mouse = GetMouse()
+                if mouse then
+                    local mt = getrawmetatable(mouse)
+                    if mt then
+                        setreadonly(mt, false)
+                        
+                        -- Hook __index for Mouse.Hit and Mouse.Target
+                        local oldIndex = mt.__index
+                        mt.__index = newcclosure(function(self, key)
+                            if SilentAimTarget and Aimbot.Settings.SilentAim then
+                                if self == mouse then
+                                    if key == "Hit" then
+                                        return CFrame.new(SilentAimTarget.Position)
+                                    elseif key == "Target" then
+                                        return SilentAimTarget
+                                    end
+                                end
+                            end
+                            return oldIndex(self, key)
+                        end)
+                        
+                        setreadonly(mt, true)
+                        SilentAimHooked = true
+                        print("[Aimbot] Silent aim hooked with hookmetamethod!")
+                        return
                     end
+                end
+            end
+            
+            -- Fallback to global metatable hooking
+            local mt = getrawmetatable(game)
+            if mt then
+                setreadonly(mt, false)
+                
+                local oldNamecall = mt.__namecall
+                local oldIndex = mt.__index
+                
+                -- Hook namecall for raycasting functions
+                mt.__namecall = newcclosure(function(self, ...)
+                    local method = getnamecallmethod()
+                    local args = {...}
                     
-                    -- Hook FireServer for tools
-                    if method == "FireServer" or method == "InvokeServer" then
-                        if tostring(self):lower():find("shoot") or tostring(self):lower():find("fire") or tostring(self):lower():find("gun") then
-                            -- Replace position argument with target
-                            for i, arg in pairs(args) do
-                                if typeof(arg) == "Vector3" then
-                                    args[i] = SilentAimTarget.Position
-                                elseif typeof(arg) == "CFrame" then
-                                    args[i] = CFrame.new(SilentAimTarget.Position)
+                    if SilentAimTarget and Aimbot.Settings.SilentAim then
+                        -- Hook raycasting methods
+                        if method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRay" or method == "FindPartOnRayWithWhitelist" then
+                            local origin = Camera.CFrame.Position
+                            local direction = (SilentAimTarget.Position - origin).Unit * 1000
+                            local newRay = Ray.new(origin, direction)
+                            
+                            -- Replace the ray in arguments
+                            if method == "FindPartOnRayWithIgnoreList" and typeof(args[2]) == "Ray" then
+                                args[2] = newRay
+                            elseif method == "FindPartOnRay" and typeof(args[2]) == "Ray" then
+                                args[2] = newRay
+                            elseif method == "FindPartOnRayWithWhitelist" and typeof(args[2]) == "Ray" then
+                                args[2] = newRay
+                            end
+                        
+                        -- Hook remote calls for weapons/tools
+                        elseif method == "FireServer" or method == "InvokeServer" then
+                            local selfName = tostring(self):lower()
+                            if selfName:find("tool") or selfName:find("gun") or selfName:find("weapon") or selfName:find("shoot") or selfName:find("fire") then
+                                -- Replace Vector3 arguments with target position
+                                for i, arg in pairs(args) do
+                                    if typeof(arg) == "Vector3" then
+                                        args[i] = SilentAimTarget.Position
+                                    elseif typeof(arg) == "CFrame" then
+                                        args[i] = CFrame.new(SilentAimTarget.Position)
+                                    end
                                 end
                             end
                         end
                     end
-                end
+                    
+                    return oldNamecall(self, unpack(args))
+                end)
                 
-                return oldNamecall(self, unpack(args))
-            end)
-            
-            mt.__index = newcclosure(function(self, key)
-                if SilentAimTarget and Aimbot.Settings.SilentAim then
-                    -- Hook Mouse.Hit and Mouse.Target
-                    if key == "Hit" then
+                -- Hook __index for mouse properties
+                mt.__index = newcclosure(function(self, key)
+                    if SilentAimTarget and Aimbot.Settings.SilentAim then
                         local mouse = GetMouse()
                         if self == mouse then
-                            return CFrame.new(SilentAimTarget.Position)
-                        end
-                    elseif key == "Target" then
-                        local mouse = GetMouse()
-                        if self == mouse then
-                            return SilentAimTarget
+                            if key == "Hit" then
+                                return CFrame.new(SilentAimTarget.Position)
+                            elseif key == "Target" then
+                                return SilentAimTarget
+                            end
                         end
                     end
-                end
+                    return oldIndex(self, key)
+                end)
                 
-                return oldIndex(self, key)
-            end)
-            
-            setreadonly(mt, true)
-            SilentAimHooked = true
-            print("[Aimbot] Silent aim hooked successfully!")
+                setreadonly(mt, true)
+                SilentAimHooked = true
+                print("[Aimbot] Silent aim hooked with global metatable!")
+            end
         end)
         
         if not success then
-            warn("[Aimbot] Silent aim failed - executor doesn't support metatable hooking")
+            warn("[Aimbot] Silent aim failed - executor doesn't support required hooking methods")
         end
     end
 end
