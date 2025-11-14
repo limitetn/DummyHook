@@ -321,9 +321,11 @@ function AdvancedCheats:SetAntiAFK(enabled)
         self.Connections.AntiAFK = RunService.Heartbeat:Connect(function()
             -- Simulate input to prevent AFK
             pcall(function()
-                VirtualInputManager:SendKeyEvent(true, "W", false, nil)
-                task.wait(0.05)
-                VirtualInputManager:SendKeyEvent(false, "W", false, nil)
+                if game:GetService("VirtualInputManager") then
+                    game:GetService("VirtualInputManager"):SendKeyEvent(true, "W", false, nil)
+                    task.wait(0.05)
+                    game:GetService("VirtualInputManager"):SendKeyEvent(false, "W", false, nil)
+                end
             end)
         end)
     end

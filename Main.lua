@@ -244,21 +244,46 @@ function loadMainScript()
     -- Load UI Library
     local Library = loadstring(game:HttpGet(BASE_URL .. "UI/Library.lua"))()
     
-    -- Load Features
-    local ESP = loadstring(game:HttpGet(BASE_URL .. "Features/ESP.lua"))()
-    local Aimbot = loadstring(game:HttpGet(BASE_URL .. "Features/Aimbot.lua"))()
-    local Crosshair = loadstring(game:HttpGet(BASE_URL .. "Features/Crosshair.lua"))()
-    local Misc = loadstring(game:HttpGet(BASE_URL .. "Features/Misc.lua"))()
-    local GameExploits = loadstring(game:HttpGet(BASE_URL .. "Features/GameExploits.lua"))()
-    local PlayerManager = loadstring(game:HttpGet(BASE_URL .. "Features/PlayerManager.lua"))()
-    local CharCustomizer = loadstring(game:HttpGet(BASE_URL .. "Features/CharCustomizer.lua"))()
-    local ThemeManager = loadstring(game:HttpGet(BASE_URL .. "Features/ThemeManager.lua"))()
-    local ConfigManager = loadstring(game:HttpGet(BASE_URL .. "Features/ConfigManager.lua"))()
-    local VisualEffects = loadstring(game:HttpGet(BASE_URL .. "Features/VisualEffects.lua"))()
-    local SkinCustomizer = loadstring(game:HttpGet(BASE_URL .. "Features/SkinCustomizer.lua"))()
-    local Notifications = loadstring(game:HttpGet(BASE_URL .. "Features/Notifications.lua"))()
-    local AdvancedCheats = loadstring(game:HttpGet(BASE_URL .. "Features/AdvancedCheats.lua"))()
-    local KeyManager = loadstring(game:HttpGet(BASE_URL .. "Features/KeyManager.lua"))()
+    -- Load Features with error handling
+    local function loadModule(name)
+        local success, module = pcall(function()
+            return loadstring(game:HttpGet(BASE_URL .. name))()
+        end)
+        
+        if not success then
+            warn("[DummyHook] Failed to load module: " .. name .. " - " .. tostring(module))
+            return nil
+        end
+        
+        if module == nil then
+            warn("[DummyHook] Module loaded but returned nil: " .. name)
+            return nil
+        end
+        
+        print("[DummyHook] Successfully loaded: " .. name)
+        return module
+    end
+    
+    local ESP = loadModule("Features/ESP.lua")
+    local Aimbot = loadModule("Features/Aimbot.lua")
+    local Crosshair = loadModule("Features/Crosshair.lua")
+    local Misc = loadModule("Features/Misc.lua")
+    local GameExploits = loadModule("Features/GameExploits.lua")
+    local PlayerManager = loadModule("Features/PlayerManager.lua")
+    local CharCustomizer = loadModule("Features/CharCustomizer.lua")
+    local ThemeManager = loadModule("Features/ThemeManager.lua")
+    local ConfigManager = loadModule("Features/ConfigManager.lua")
+    local VisualEffects = loadModule("Features/VisualEffects.lua")
+    local SkinCustomizer = loadModule("Features/SkinCustomizer.lua")
+    local Notifications = loadModule("Features/Notifications.lua")
+    local AdvancedCheats = loadModule("Features/AdvancedCheats.lua")
+    local KeyManager = loadModule("Features/KeyManager.lua")
+    
+    -- Check if all modules loaded successfully
+    if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats or not KeyManager then
+        warn("[DummyHook] Failed to load one or more modules. Aborting.")
+        return
+    end
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
