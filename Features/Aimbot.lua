@@ -160,61 +160,86 @@ local function ResolveTarget(targetPart)
 end
 
 -- Silent Aim (fires at target without moving camera)
+local SilentAimHooked = false
+local SilentAimTarget = nil
+
 local function ApplySilentAim(targetPart)
     if not Aimbot.Settings.SilentAim then return end
     
+    SilentAimTarget = targetPart
     local targetPos = ResolveTarget(targetPart)
     
-    -- Hook mouse position (updated for current Roblox)
-    local success = pcall(function()
-        local mt = getrawmetatable(game)
-        local oldNamecall = mt.__namecall
-        local oldIndex = mt.__index
-        
-        setreadonly(mt, false)
-        
-        mt.__namecall = newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            local args = {...}
+    -- Hook mouse position only once
+    if not SilentAimHooked then
+        local success = pcall(function()
+            local mt = getrawmetatable(game)
+            setreadonly(mt, false)
             
-            -- Hook GetMouse and similar methods
-            if method == "GetMouse" or method == "getMouse" then
-                local mouse = oldNamecall(self, ...)
-                local mouseMt = getrawmetatable(mouse)
-                setreadonly(mouseMt, false)
+            local oldNamecall = mt.__namecall
+            local oldIndex = mt.__index
+            
+            mt.__namecall = newcclosure(function(self, ...)
+                local method = getnamecallmethod()
+                local args = {...}
                 
-                mouseMt.__index = newcclosure(function(m, key)
-                    if key == "Hit" then
-                        return CFrame.new(targetPos)
-                    elseif key == "Target" then
-                        return targetPart
+                if SilentAimTarget and Aimbot.Settings.SilentAim then
+                    -- Hook Ray casting
+                    if method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRay" then
+                        local ray = args[1]
+                        if ray then
+                            local newRay = Ray.new(
+                                Camera.CFrame.Position,
+                                (SilentAimTarget.Position - Camera.CFrame.Position).Unit * 1000
+                            )
+                            args[1] = newRay
+                        end
                     end
-                    return oldIndex(m, key)
-                end)
-                
-                setreadonly(mouseMt, true)
-                return mouse
-            end
-            
-            return oldNamecall(self, ...)
-        end)
-        
-        mt.__index = newcclosure(function(self, key)
-            if self == Mouse and (key == "Hit" or key == "Target") then
-                if key == "Hit" then
-                    return CFrame.new(targetPos)
-                elseif key == "Target" then
-                    return targetPart
+                    
+                    -- Hook FireServer for tools
+                    if method == "FireServer" or method == "InvokeServer" then
+                        if tostring(self):lower():find("shoot") or tostring(self):lower():find("fire") or tostring(self):lower():find("gun") then
+                            -- Replace position argument with target
+                            for i, arg in pairs(args) do
+                                if typeof(arg) == "Vector3" then
+                                    args[i] = SilentAimTarget.Position
+                                elseif typeof(arg) == "CFrame" then
+                                    args[i] = CFrame.new(SilentAimTarget.Position)
+                                end
+                            end
+                        end
+                    end
                 end
-            end
-            return oldIndex(self, key)
+                
+                return oldNamecall(self, unpack(args))
+            end)
+            
+            mt.__index = newcclosure(function(self, key)
+                if SilentAimTarget and Aimbot.Settings.SilentAim then
+                    -- Hook Mouse.Hit and Mouse.Target
+                    if key == "Hit" then
+                        local mouse = GetMouse()
+                        if self == mouse then
+                            return CFrame.new(SilentAimTarget.Position)
+                        end
+                    elseif key == "Target" then
+                        local mouse = GetMouse()
+                        if self == mouse then
+                            return SilentAimTarget
+                        end
+                    end
+                end
+                
+                return oldIndex(self, key)
+            end)
+            
+            setreadonly(mt, true)
+            SilentAimHooked = true
+            print("[Aimbot] Silent aim hooked successfully!")
         end)
         
-        setreadonly(mt, true)
-    end)
-    
-    if not success then
-        warn("[Aimbot] Silent aim not supported on this executor")
+        if not success then
+            warn("[Aimbot] Silent aim failed - executor doesn't support metatable hooking")
+        end
     end
 end
 

@@ -255,6 +255,7 @@ function loadMainScript()
     local ThemeManager = loadstring(game:HttpGet(BASE_URL .. "Features/ThemeManager.lua"))()
     local ConfigManager = loadstring(game:HttpGet(BASE_URL .. "Features/ConfigManager.lua"))()
     local VisualEffects = loadstring(game:HttpGet(BASE_URL .. "Features/VisualEffects.lua"))()
+    local SkinCustomizer = loadstring(game:HttpGet(BASE_URL .. "Features/SkinCustomizer.lua"))()
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
@@ -525,6 +526,47 @@ function loadMainScript()
         CharCustomizer:RestoreAppearance()
     end)
     
+    local SkinSection = MiscTab:CreateSection("Skin Customization")
+    SkinSection:AddToggle("Rainbow Body", false, function(value)
+        SkinCustomizer:SetRainbowBody(value)
+    end)
+    SkinSection:AddSlider("Rainbow Speed", 0.1, 5, 1, function(value)
+        SkinCustomizer.Settings.RainbowSpeed = value
+    end)
+    SkinSection:AddToggle("Rainbow Accessories", false, function(value)
+        SkinCustomizer:SetRainbowAccessories(value)
+    end)
+    SkinSection:AddColorPicker("Body Color", Color3.fromRGB(255, 255, 255), function(value)
+        SkinCustomizer:SetBodyColor(value)
+    end)
+    SkinSection:AddDropdown("Material", {"SmoothPlastic", "Neon", "Glass", "ForceField", "Wood", "Metal", "DiamondPlate"}, "SmoothPlastic", function(value)
+        local materials = {
+            SmoothPlastic = Enum.Material.SmoothPlastic,
+            Neon = Enum.Material.Neon,
+            Glass = Enum.Material.Glass,
+            ForceField = Enum.Material.ForceField,
+            Wood = Enum.Material.Wood,
+            Metal = Enum.Material.Metal,
+            DiamondPlate = Enum.Material.DiamondPlate
+        }
+        SkinCustomizer:SetMaterial(materials[value])
+    end)
+    SkinSection:AddSlider("Reflectance", 0, 1, 0, function(value)
+        SkinCustomizer:SetReflectance(value)
+    end)
+    SkinSection:AddSlider("Transparency", 0, 1, 0, function(value)
+        SkinCustomizer:SetTransparency(value)
+    end)
+    SkinSection:AddSlider("Head Scale", 0.1, 5, 1, function(value)
+        SkinCustomizer:SetCharacterScale(value, SkinCustomizer.Settings.BodyScale)
+    end)
+    SkinSection:AddSlider("Body Scale", 0.1, 5, 1, function(value)
+        SkinCustomizer:SetCharacterScale(SkinCustomizer.Settings.HeadScale, value)
+    end)
+    SkinSection:AddDropdown("Outfit Preset", {"Default", "Neon", "Glass", "ForceField", "Wood", "Metal", "DiamondPlate"}, "Default", function(value)
+        SkinCustomizer:SetOutfitPreset(value)
+    end)
+    
     -- Exploits Tab (Game-specific)
     local SniperDuelsSection = ExploitsTab:CreateSection("Sniper Duels")
     SniperDuelsSection:AddToggle("Item Duping (Enable First)", false, function(value)
@@ -699,6 +741,18 @@ function loadMainScript()
         GameExploits:Cleanup()
         Misc:Cleanup()
         VisualEffects:Cleanup()
+        SkinCustomizer:Cleanup()
+        -- Reset silent aim
+        pcall(function()
+            if getrawmetatable then
+                local mt = getrawmetatable(game)
+                if mt and Aimbot.OriginalNamecall then
+                    setreadonly(mt, false)
+                    mt.__namecall = Aimbot.OriginalNamecall
+                    setreadonly(mt, true)
+                end
+            end
+        end)
     end)
     
     DummyHook.Loaded = true
