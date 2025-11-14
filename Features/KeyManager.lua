@@ -5,7 +5,7 @@
 
 local KeyManager = {
     Keys = {},
-    PastebinURL = "https://pastebin.com/raw/YOUR_PASTEBIN_KEY_HERE", -- Replace with actual pastebin URL
+    PastebinURL = "https://pastebin.com/raw/pzf7297f", -- Replace with actual pastebin URL
     EncryptionKey = "DUMMYHOOK_ENCRYPTION_KEY_2025", -- Simple XOR encryption key
     LastUpdate = 0,
     UpdateInterval = 300, -- 5 minutes
@@ -45,8 +45,10 @@ function KeyManager:Initialize()
     }
     
     -- Try to fetch keys from pastebin
-    spawn(function()
-        self:UpdateKeysFromPastebin()
+    pcall(function()
+        spawn(function()
+            self:UpdateKeysFromPastebin()
+        end)
     end)
 end
 
@@ -58,18 +60,29 @@ function KeyManager:UpdateKeysFromPastebin()
     
     if success and result then
         -- Decrypt the data
-        local decryptedData = XOREncryptDecrypt(result, self.EncryptionKey)
+        local decryptSuccess, decryptedData = pcall(function()
+            return XOREncryptDecrypt(result, self.EncryptionKey)
+        end)
+        
+        if not decryptSuccess then
+            warn("[KeyManager] Failed to decrypt data: " .. tostring(decryptedData))
+            return false
+        end
         
         -- Parse JSON
-        local success, keys = pcall(function()
+        local jsonSuccess, keys = pcall(function()
             return HttpService:JSONDecode(decryptedData)
         end)
         
-        if success and type(keys) == "table" then
+        if jsonSuccess and type(keys) == "table" then
             self.Keys = keys
             self.LastUpdate = os.time()
             return true
+        else
+            warn("[KeyManager] Failed to parse JSON: " .. tostring(keys))
         end
+    else
+        warn("[KeyManager] Failed to fetch data from Pastebin: " .. tostring(result))
     end
     
     return false
@@ -79,7 +92,9 @@ end
 function KeyManager:ValidateKey(key, hwid)
     -- Check if we need to update keys
     if os.time() - self.LastUpdate > self.UpdateInterval then
-        self:UpdateKeysFromPastebin()
+        pcall(function()
+            self:UpdateKeysFromPastebin()
+        end)
     end
     
     -- Check if key exists
@@ -104,7 +119,15 @@ end
 
 -- Generate a new key (for admin use)
 function KeyManager:GenerateKey(level, days, hwid)
-    local key = "DUMMYHOOK-" .. string.upper(HttpService:GenerateGUID(false):sub(1, 16))
+    local success, key = pcall(function()
+        return "DUMMYHOOK-" .. string.upper(HttpService:GenerateGUID(false):sub(1, 16))
+    end)
+    
+    if not success then
+        warn("[KeyManager] Failed to generate key: " .. tostring(key))
+        return nil
+    end
+    
     local expiry = os.time() + (days * 24 * 60 * 60)
     
     self.Keys[key] = {
@@ -123,8 +146,25 @@ end
 
 -- Encrypt keys for pastebin storage
 function KeyManager:ExportEncryptedKeys()
-    local jsonData = HttpService:JSONEncode(self.Keys)
-    return XOREncryptDecrypt(jsonData, self.EncryptionKey)
+    local success, jsonData = pcall(function()
+        return HttpService:JSONEncode(self.Keys)
+    end)
+    
+    if not success then
+        warn("[KeyManager] Failed to encode JSON: " .. tostring(jsonData))
+        return nil
+    end
+    
+    local encryptSuccess, encryptedData = pcall(function()
+        return XOREncryptDecrypt(jsonData, self.EncryptionKey)
+    end)
+    
+    if not encryptSuccess then
+        warn("[KeyManager] Failed to encrypt data: " .. tostring(encryptedData))
+        return nil
+    end
+    
+    return encryptedData
 end
 
 return KeyManager
