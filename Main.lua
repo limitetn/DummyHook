@@ -224,6 +224,16 @@ end
 function loadMainScript()
     print("[DummyHook] Loading main interface...")
     
+    -- Create loading notification
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "DummyHook";
+            Text = "Loading modules...";
+            Duration = 3;
+            Icon = "rbxassetid://7733992358";
+        })
+    end)
+    
     -- GitHub Repository Configuration
     -- REPLACE 'YourGitHubUsername' with your actual GitHub username
     local GITHUB_USER = "YourGitHubUsername"
@@ -240,6 +250,7 @@ function loadMainScript()
     local Crosshair = loadstring(game:HttpGet(BASE_URL .. "Features/Crosshair.lua"))()
     local Misc = loadstring(game:HttpGet(BASE_URL .. "Features/Misc.lua"))()
     local GameExploits = loadstring(game:HttpGet(BASE_URL .. "Features/GameExploits.lua"))()
+    local PlayerManager = loadstring(game:HttpGet(BASE_URL .. "Features/PlayerManager.lua"))()
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
@@ -255,6 +266,7 @@ function loadMainScript()
     -- Create Tabs
     local RageTab = Window:CreateTab("Rage")
     local VisualsTab = Window:CreateTab("Visuals")
+    local PlayersTab = Window:CreateTab("Players")
     local MiscTab = Window:CreateTab("Misc")
     local ExploitsTab = Window:CreateTab("Exploits")
     local ConfigTab = Window:CreateTab("Config")
@@ -326,8 +338,17 @@ function loadMainScript()
     ESPSection:AddToggle("Chams", false, function(value)
         ESP:SetChams(value)
     end)
+    ESPSection:AddToggle("Rainbow ESP", false, function(value)
+        ESP.Settings.RainbowESP = value
+    end)
+    ESPSection:AddToggle("Team Colors", true, function(value)
+        ESP.Settings.TeamColor = value
+    end)
     ESPSection:AddColorPicker("Box Color", Color3.fromRGB(255, 255, 255), function(value)
         ESP:SetBoxColor(value)
+    end)
+    ESPSection:AddSlider("Max Distance", 500, 5000, 2000, function(value)
+        ESP.Settings.MaxDistance = value
     end)
     
     local CrosshairSection = VisualsTab:CreateSection("Crosshair")
@@ -340,8 +361,72 @@ function loadMainScript()
     CrosshairSection:AddSlider("Thickness", 1, 10, 2, function(value)
         Crosshair:SetThickness(value)
     end)
+    CrosshairSection:AddToggle("Rainbow Mode", false, function(value)
+        Crosshair:SetRainbow(value)
+    end)
+    CrosshairSection:AddToggle("Center Dot", false, function(value)
+        Crosshair:SetDot(value)
+    end)
     CrosshairSection:AddColorPicker("Color", Color3.fromRGB(0, 255, 0), function(value)
         Crosshair:SetColor(value)
+    end)
+    
+    -- Players Tab
+    local PlayerListSection = PlayersTab:CreateSection("Player List")
+    
+    -- Create player selection dropdown
+    local playerNames = {}
+    local playerObjects = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            table.insert(playerNames, player.Name)
+            playerObjects[player.Name] = player
+        end
+    end
+    
+    local selectedPlayer = nil
+    PlayerListSection:AddDropdown("Select Player", playerNames, playerNames[1] or "None", function(value)
+        selectedPlayer = playerObjects[value]
+    end)
+    
+    local PlayerActionsSection = PlayersTab:CreateSection("Actions")
+    PlayerActionsSection:AddButton("Spectate", function()
+        if selectedPlayer then
+            PlayerManager:Spectate(selectedPlayer)
+        end
+    end)
+    PlayerActionsSection:AddButton("Stop Spectate", function()
+        PlayerManager:StopSpectate()
+    end)
+    PlayerActionsSection:AddButton("Teleport To", function()
+        if selectedPlayer then
+            PlayerManager:TeleportTo(selectedPlayer)
+        end
+    end)
+    PlayerActionsSection:AddButton("View Stats", function()
+        if selectedPlayer then
+            local stats = PlayerManager:GetPlayerStats(selectedPlayer)
+            print("========== Player Stats ==========")
+            for key, value in pairs(stats) do
+                print(key .. ": " .. tostring(value))
+            end
+            print("==================================")
+        end
+    end)
+    
+    local FriendSection = PlayersTab:CreateSection("Friend System")
+    FriendSection:AddButton("Add Friend", function()
+        if selectedPlayer then
+            PlayerManager:AddFriend(selectedPlayer)
+        end
+    end)
+    FriendSection:AddButton("Remove Friend", function()
+        if selectedPlayer then
+            PlayerManager:RemoveFriend(selectedPlayer)
+        end
+    end)
+    FriendSection:AddToggle("ESP Friends Only", false, function(value)
+        -- Implement friend-only ESP filter
     end)
     
     -- Misc Tab
@@ -463,6 +548,23 @@ function loadMainScript()
     
     DummyHook.Loaded = true
     print("[DummyHook] Successfully loaded!")
+    
+    -- Success notification
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "DummyHook | Premium";
+            Text = "Loaded successfully! Press RightShift to open.";
+            Duration = 5;
+            Icon = "rbxassetid://7733992358";
+        })
+    end)
+    
+    -- Console banner
+    print("========================================")
+    print("    DummyHook v1.0.0 - Premium")
+    print("    Press RightShift to toggle GUI")
+    print("    Default Key: DUMMYHOOK-PREMIUM-2025")
+    print("========================================")
 end
 
 -- Initialize

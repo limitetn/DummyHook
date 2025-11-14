@@ -161,11 +161,39 @@ local function ApplySilentAim(targetPart)
     
     local targetPos = ResolveTarget(targetPart)
     
-    -- Hook mouse position (advanced)
-    pcall(function()
+    -- Hook mouse position (updated for current Roblox)
+    local success = pcall(function()
         local mt = getrawmetatable(game)
+        local oldNamecall = mt.__namecall
         local oldIndex = mt.__index
+        
         setreadonly(mt, false)
+        
+        mt.__namecall = newcclosure(function(self, ...)
+            local method = getnamecallmethod()
+            local args = {...}
+            
+            -- Hook GetMouse and similar methods
+            if method == "GetMouse" or method == "getMouse" then
+                local mouse = oldNamecall(self, ...)
+                local mouseMt = getrawmetatable(mouse)
+                setreadonly(mouseMt, false)
+                
+                mouseMt.__index = newcclosure(function(m, key)
+                    if key == "Hit" then
+                        return CFrame.new(targetPos)
+                    elseif key == "Target" then
+                        return targetPart
+                    end
+                    return oldIndex(m, key)
+                end)
+                
+                setreadonly(mouseMt, true)
+                return mouse
+            end
+            
+            return oldNamecall(self, ...)
+        end)
         
         mt.__index = newcclosure(function(self, key)
             if self == Mouse and (key == "Hit" or key == "Target") then
@@ -180,6 +208,10 @@ local function ApplySilentAim(targetPart)
         
         setreadonly(mt, true)
     end)
+    
+    if not success then
+        warn("[Aimbot] Silent aim not supported on this executor")
+    end
 end
 
 -- Aim Assist (subtle aim pull)
@@ -270,10 +302,26 @@ local function AutoShoot()
     if not Aimbot.Settings.AutoShoot then return end
     if not Aimbot.CurrentTarget then return end
     
-    -- Simulate mouse click
-    mouse1press()
-    wait(0.05)
-    mouse1release()
+    -- Simulate mouse click (updated for current Roblox)
+    local success = pcall(function()
+        if mouse1press and mouse1release then
+            mouse1press()
+            task.wait(0.05)
+            mouse1release()
+        elseif mouse1click then
+            mouse1click()
+        end
+    end)
+    
+    if not success then
+        -- Fallback: Try virtual input
+        pcall(function()
+            local VirtualInputManager = game:GetService("VirtualInputManager")
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+            task.wait(0.05)
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+        end)
+    end
 end
 
 -- Initialize Aimbot

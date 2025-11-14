@@ -10,6 +10,7 @@ local ESP = {
         Names = true,
         Distance = true,
         HealthBar = true,
+        HealthText = true,
         Tracers = false,
         Chams = false,
         TeamCheck = true,
@@ -17,6 +18,15 @@ local ESP = {
         TracerColor = Color3.fromRGB(255, 255, 255),
         TextSize = 13,
         MaxDistance = 2000,
+        FilledBox = false,
+        BoxTransparency = 0.3,
+        ShowWeapon = true,
+        ShowDisplayName = false,
+        RainbowESP = false,
+        TeamColor = true,
+        SkeletonESP = false,
+        HeadDot = true,
+        LookTracers = false,
     },
     Objects = {},
     Connections = {}
@@ -301,17 +311,30 @@ local function UpdateChams(player)
     local character = player.Character
     if not character then return end
     
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") and not part:FindFirstChild("ChamHighlight") then
-            local highlight = Instance.new("Highlight")
-            highlight.Name = "ChamHighlight"
-            highlight.FillColor = Color3.fromRGB(255, 100, 100)
-            highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-            highlight.FillTransparency = 0.5
-            highlight.OutlineTransparency = 0
-            highlight.Parent = part
-        end
+    -- Use Highlight instance (modern Roblox)
+    local highlight = character:FindFirstChildOfClass("Highlight")
+    if not highlight then
+        highlight = Instance.new("Highlight")
+        highlight.Name = "ESPHighlight"
+        highlight.Parent = character
     end
+    
+    -- Rainbow or team color
+    if ESP.Settings.RainbowESP then
+        local hue = (tick() % 5) / 5
+        highlight.FillColor = Color3.fromHSV(hue, 1, 1)
+        highlight.OutlineColor = Color3.fromHSV(hue, 1, 1)
+    elseif ESP.Settings.TeamColor and player.Team then
+        highlight.FillColor = player.Team.TeamColor.Color
+        highlight.OutlineColor = player.Team.TeamColor.Color
+    else
+        highlight.FillColor = Color3.fromRGB(255, 100, 100)
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    end
+    
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    highlight.Enabled = true
 end
 
 -- Initialize ESP for all players

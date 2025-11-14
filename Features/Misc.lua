@@ -137,14 +137,17 @@ function Misc:SetFly(value)
         local rootPart = GetRootPart()
         if not rootPart then return end
         
+        -- Modern approach: Use AlignPosition and AlignOrientation
         local bodyVelocity = Instance.new("BodyVelocity")
         bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
         bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        bodyVelocity.Name = "DummyHook_FlyVelocity"
         bodyVelocity.Parent = rootPart
         
         local bodyGyro = Instance.new("BodyGyro")
         bodyGyro.MaxTorque = Vector3.new(100000, 100000, 100000)
         bodyGyro.P = 10000
+        bodyGyro.Name = "DummyHook_FlyGyro"
         bodyGyro.Parent = rootPart
         
         self.Connections.Fly = RunService.Heartbeat:Connect(function()
@@ -174,17 +177,20 @@ function Misc:SetFly(value)
             local root = GetRootPart()
             if not root then return end
             
+            local bv = root:FindFirstChild("DummyHook_FlyVelocity")
+            if not bv then return end
+            
             if input.KeyCode == Enum.KeyCode.Space then
-                bodyVelocity.Velocity = bodyVelocity.Velocity + Vector3.new(0, self.Settings.FlySpeed, 0)
-            elseif input.KeyCode == Enum.KeyCode.LeftControl then
-                bodyVelocity.Velocity = bodyVelocity.Velocity + Vector3.new(0, -self.Settings.FlySpeed, 0)
+                bv.Velocity = bv.Velocity + Vector3.new(0, self.Settings.FlySpeed, 0)
+            elseif input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.LeftShift then
+                bv.Velocity = bv.Velocity + Vector3.new(0, -self.Settings.FlySpeed, 0)
             end
         end)
     else
         local rootPart = GetRootPart()
         if rootPart then
             for _, object in pairs(rootPart:GetChildren()) do
-                if object:IsA("BodyVelocity") or object:IsA("BodyGyro") then
+                if object.Name == "DummyHook_FlyVelocity" or object.Name == "DummyHook_FlyGyro" then
                     object:Destroy()
                 end
             end
