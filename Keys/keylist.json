@@ -1,0 +1,17 @@
+{
+  "DUMMYHOOK-PREMIUM-2025": {
+    "Level": "Premium",
+    "Expiry": 1999999999,
+    "HWID": "STANDALONE"
+  },
+  "DUMMYHOOK-ELITE-2025": {
+    "Level": "Elite",
+    "Expiry": 1999999999,
+    "HWID": "ANY"
+  },
+  "DUMMYHOOK-BASIC-2025": {
+    "Level": "Basic",
+    "Expiry": 1999999999,
+    "HWID": "ANY"
+  }
+}

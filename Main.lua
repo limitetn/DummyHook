@@ -257,6 +257,8 @@ function loadMainScript()
     local VisualEffects = loadstring(game:HttpGet(BASE_URL .. "Features/VisualEffects.lua"))()
     local SkinCustomizer = loadstring(game:HttpGet(BASE_URL .. "Features/SkinCustomizer.lua"))()
     local Notifications = loadstring(game:HttpGet(BASE_URL .. "Features/Notifications.lua"))()
+    local AdvancedCheats = loadstring(game:HttpGet(BASE_URL .. "Features/AdvancedCheats.lua"))()
+    local KeyManager = loadstring(game:HttpGet(BASE_URL .. "Features/KeyManager.lua"))()
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
@@ -583,6 +585,46 @@ function loadMainScript()
         Notifications:Success("Keybinds", "All keybinds reset to defaults", 3)
     end)
     
+    local AdvancedMovementSection = MiscTab:CreateSection("Advanced Movement")
+    AdvancedMovementSection:AddToggle("Speed Hack", false, function(value)
+        AdvancedCheats:SetSpeedHack(value)
+    end)
+    AdvancedMovementSection:AddSlider("Speed Multiplier", 1, 10, 2, function(value)
+        AdvancedCheats.Settings.SpeedMultiplier = value
+    end)
+    AdvancedMovementSection:AddToggle("Fly", false, function(value)
+        AdvancedCheats:SetFly(value)
+    end)
+    AdvancedMovementSection:AddSlider("Fly Speed", 10, 100, 50, function(value)
+        AdvancedCheats.Settings.FlySpeed = value
+    end)
+    AdvancedMovementSection:AddToggle("Noclip", false, function(value)
+        AdvancedCheats:SetNoclip(value)
+    end)
+    AdvancedMovementSection:AddToggle("Infinite Jump", false, function(value)
+        AdvancedCheats:SetInfiniteJump(value)
+    end)
+    
+    local AdvancedCombatSection = MiscTab:CreateSection("Advanced Combat")
+    AdvancedCombatSection:AddToggle("Auto Clicker", false, function(value)
+        AdvancedCheats:SetAutoClicker(value)
+    end)
+    AdvancedCombatSection:AddSlider("Clicks Per Second", 1, 50, 10, function(value)
+        AdvancedCheats.Settings.ClicksPerSecond = value
+    end)
+    AdvancedCombatSection:AddToggle("Reach", false, function(value)
+        AdvancedCheats:SetReach(value)
+    end)
+    AdvancedCombatSection:AddSlider("Reach Distance", 10, 50, 20, function(value)
+        AdvancedCheats.Settings.ReachDistance = value
+    end)
+    AdvancedCombatSection:AddToggle("Critical Hits", false, function(value)
+        AdvancedCheats.Settings.Criticals = value
+    end)
+    AdvancedCombatSection:AddSlider("Critical Chance", 0, 100, 50, function(value)
+        AdvancedCheats.Settings.CriticalChance = value
+    end)
+    
     -- Exploits Tab (Game-specific)
     local SniperDuelsSection = ExploitsTab:CreateSection("Sniper Duels")
     SniperDuelsSection:AddToggle("Item Duping (Enable First)", false, function(value)
@@ -774,6 +816,9 @@ function loadMainScript()
     
     -- Initialize notifications
     Notifications:Initialize()
+    
+    -- Initialize key manager
+    KeyManager:Initialize()
     
     -- Show welcome notification
     Notifications:Success("DummyHook Loaded", "Press RightShift to open the menu. Enjoy!", 5)
