@@ -21,15 +21,30 @@ local Misc = {
         BunnyHop = false,
         EdgeJump = false,
         AutoStrafeSpeed = 1,
+        HideName = false,
+        AntiOBS = false,
+        ChatSpam = false,
+        ChatSpamDelay = 1,
+        ChatSpamMessage = "DummyHook on top!",
     },
     Connections = {},
     OriginalValues = {},
-    SpinAngle = 0
+    SpinAngle = 0,
+    OriginalNameDisplay = nil,
+    ChatSpamMessages = {
+        "DummyHook on top!",
+        "Get good or get DummyHook",
+        "Premium features unlocked",
+        "DummyHook.io",
+        "Too easy with DummyHook"
+    }
 }
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
 -- Utility Functions
@@ -409,6 +424,143 @@ function Misc:SetFakeLag(value)
                 rootPart.CFrame = rootPart.CFrame - (velocity * 0.1)
             end
         end)
+    end
+end
+
+-- Hide Name
+function Misc:SetHideName(value)
+    self.Settings.HideName = value
+    
+    local character = GetCharacter()
+    if not character then return end
+    
+    local head = character:FindFirstChild("Head")
+    if not head then return end
+    
+    -- Find all billboards (name tags)
+    for _, obj in pairs(head:GetChildren()) do
+        if obj:IsA("BillboardGui") then
+            if value then
+                if not self.OriginalNameDisplay then
+                    self.OriginalNameDisplay = obj.Enabled
+                end
+                obj.Enabled = false
+            else
+                if self.OriginalNameDisplay ~= nil then
+                    obj.Enabled = self.OriginalNameDisplay
+                end
+            end
+        end
+    end
+    
+    -- Also hide overhead name
+    local humanoid = GetHumanoid()
+    if humanoid then
+        if value then
+            humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+        else
+            humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
+        end
+    end
+end
+
+-- Anti OBS (Screen Capture Protection)
+function Misc:SetAntiOBS(value)
+    self.Settings.AntiOBS = value
+    
+    if value then
+        -- Method 1: Transparency manipulation
+        local character = GetCharacter()
+        if character then
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
+                    if not self.OriginalValues[part] then
+                        self.OriginalValues[part] = {}
+                        if part:IsA("BasePart") then
+                            self.OriginalValues[part].Transparency = part.Transparency
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- Method 2: Render blocking
+        if self.Connections.AntiOBS then
+            self.Connections.AntiOBS:Disconnect()
+        end
+        
+        self.Connections.AntiOBS = RunService.RenderStepped:Connect(function()
+            -- Rapidly change transparency to confuse screen capture
+            local character = GetCharacter()
+            if character then
+                local tick_value = tick() % 0.1
+                for _, part in pairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        part.Transparency = tick_value > 0.05 and 0 or 1
+                    end
+                end
+            end
+        end)
+        
+        print("[Misc] Anti-OBS enabled (may cause visual glitches)")
+    else
+        if self.Connections.AntiOBS then
+            self.Connections.AntiOBS:Disconnect()
+            self.Connections.AntiOBS = nil
+        end
+        
+        -- Restore transparency
+        for part, values in pairs(self.OriginalValues) do
+            if part:IsA("BasePart") and values.Transparency then
+                part.Transparency = values.Transparency
+            end
+        end
+    end
+end
+
+-- Chat Spammer
+function Misc:SetChatSpam(value)
+    self.Settings.ChatSpam = value
+    
+    if self.Connections.ChatSpam then
+        self.Connections.ChatSpam:Disconnect()
+        self.Connections.ChatSpam = nil
+    end
+    
+    if value then
+        local messageIndex = 1
+        
+        self.Connections.ChatSpam = RunService.Heartbeat:Connect(function()
+            if tick() % self.Settings.ChatSpamDelay < 0.016 then
+                local message = self.Settings.ChatSpamMessage
+                
+                -- Try new TextChatService first
+                pcall(function()
+                    if TextChatService.ChatInputBarConfiguration then
+                        TextChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync(message)
+                    end
+                end)
+                
+                -- Fallback to old chat
+                pcall(function()
+                    local chatRemote = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+                    if chatRemote then
+                        local sayMessageRemote = chatRemote:FindFirstChild("SayMessageRequest")
+                        if sayMessageRemote then
+                            sayMessageRemote:FireServer(message, "All")
+                        end
+                    end
+                end)
+                
+                -- Cycle through messages if using preset
+                if message == "DummyHook on top!" then
+                    messageIndex = (messageIndex % #self.ChatSpamMessages) + 1
+                    self.Settings.ChatSpamMessage = self.ChatSpamMessages[messageIndex]
+                end
+            end
+        end)
+        
+        print("[Misc] Chat spam enabled")
     end
 end
 
