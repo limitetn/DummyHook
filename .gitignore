@@ -1,0 +1,29 @@
+# DummyHook .gitignore
+
+# Local configuration
+config.local.lua
+keys.txt
+*.local.*
+
+# Logs
+*.log
+debug.txt
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Personal test files
+test.lua
+testing/
