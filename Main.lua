@@ -852,6 +852,37 @@ function loadMainScript()
         GameExploits:SetInstantKill(value)
     end)
     
+    -- Case Purchasing Section
+    local CasePurchaseSection = ExploitsTab:CreateSection("Case Purchasing (No Currency)")
+    
+    -- Common case names in Sniper Duels
+    local caseNames = {"Starter Case", "Bronze Case", "Silver Case", "Gold Case", "Platinum Case", "Diamond Case", "Legendary Case", "Mythic Case", "Godly Case"}
+    
+    local selectedCase = "Starter Case"
+    local purchaseAmount = 1
+    
+    CasePurchaseSection:AddDropdown("Select Case", caseNames, "Starter Case", function(value)
+        selectedCase = value
+    end)
+    
+    CasePurchaseSection:AddSlider("Amount", 1, 100, 1, function(value)
+        purchaseAmount = math.floor(value)
+    end)
+    
+    CasePurchaseSection:AddButton("Purchase Cases", function()
+        Notifications:Info("Case Purchase", "Attempting to purchase " .. purchaseAmount .. "x " .. selectedCase .. " without currency...", 3)
+        GameExploits:PurchaseCases(selectedCase, purchaseAmount)
+    end)
+    
+    CasePurchaseSection:AddButton("Purchase All Cases (x10)", function()
+        Notifications:Info("Case Purchase", "Attempting to purchase 10 of each case type...", 3)
+        for _, caseName in ipairs(caseNames) do
+            GameExploits:PurchaseCases(caseName, 10)
+            wait(0.5) -- Small delay between purchases
+        end
+        Notifications:Success("Case Purchase", "Finished attempting to purchase all cases!", 3)
+    end)
+    
     -- Skin Detection Section
     local SkinDetectionSection = ExploitsTab:CreateSection("Skin Detection")
     
