@@ -1013,6 +1013,21 @@ function loadMainScript()
         VisualEffects:SetEffectIntensity(value)
     end)
     
+    -- Watermark Section
+    local WatermarkSection = ConfigTab:CreateSection("Watermark")
+    WatermarkSection:AddToggle("Show Watermark", true, function(value)
+        -- Find the watermark and toggle its visibility
+        pcall(function()
+            local screenGui = game:GetService("CoreGui"):FindFirstChild("DummyHook_UI")
+            if screenGui then
+                local watermark = screenGui:FindFirstChild("Watermark")
+                if watermark then
+                    watermark.Visible = value
+                end
+            end
+        end)
+    end)
+    
     local ProfileSection = ConfigTab:CreateSection("Profile Management")
     local currentSettings = {}
     

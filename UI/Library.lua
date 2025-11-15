@@ -111,6 +111,41 @@ function Library:CreateWindow(config)
         Parent = CoreGui
     })
     
+    -- Watermark
+    local Watermark = CreateElement("TextLabel", {
+        Name = "Watermark",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = "DummyHook",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextTransparency = 0.8,
+        TextSize = 48,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        TextYAlignment = Enum.TextYAlignment.Center,
+        Parent = ScreenGui
+    })
+    
+    -- Animate watermark
+    spawn(function()
+        local transparency = 0.7
+        local direction = 0.005
+        
+        while wait(0.05) do
+            if Watermark and Watermark.Parent then
+                transparency = transparency + direction
+                
+                if transparency >= 0.9 then
+                    direction = -0.005
+                elseif transparency <= 0.7 then
+                    direction = 0.005
+                end
+                
+                Watermark.TextTransparency = transparency
+            end
+        end
+    end)
+    
     -- Main Frame
     local MainFrame = CreateElement("Frame", {
         Name = "MainFrame",
