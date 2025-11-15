@@ -44,7 +44,7 @@ function Notifications:Initialize()
     if self.NotificationFrame then return end
     
     local screenGui = CreateElement("ScreenGui", {
-        Name = "DummyHook_Notifications",
+        Name = "DummyHook_Notifications_Center",
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
         Parent = CoreGui
