@@ -25,6 +25,8 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
@@ -35,6 +37,88 @@ local function loadModule(url)
         return loadstring(game:HttpGet(url))()
     end)
     return success and result or nil
+end
+
+-- Cool Animation with Music
+local function showIntroAnimation(callback)
+    local AnimationGUI = Instance.new("ScreenGui")
+    AnimationGUI.Name = "DummyHook_Animation"
+    AnimationGUI.ResetOnSpawn = false
+    AnimationGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    local Background = Instance.new("Frame")
+    Background.Size = UDim2.new(1, 0, 1, 0)
+    Background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Background.Parent = AnimationGUI
+    
+    local DummyHookText = Instance.new("TextLabel")
+    DummyHookText.Size = UDim2.new(1, 0, 0, 100)
+    DummyHookText.Position = UDim2.new(0, 0, 0.4, -50)
+    DummyHookText.BackgroundTransparency = 1
+    DummyHookText.Text = "DummyHook"
+    DummyHookText.TextColor3 = Color3.fromRGB(130, 195, 65)
+    DummyHookText.TextSize = 48
+    DummyHookText.Font = Enum.Font.GothamBold
+    DummyHookText.Parent = AnimationGUI
+    
+    local SubtitleText = Instance.new("TextLabel")
+    SubtitleText.Size = UDim2.new(1, 0, 0, 50)
+    SubtitleText.Position = UDim2.new(0, 0, 0.4, 50)
+    SubtitleText.BackgroundTransparency = 1
+    SubtitleText.Text = "The perfect Hook, for fps."
+    SubtitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SubtitleText.TextSize = 24
+    SubtitleText.Font = Enum.Font.Gotham
+    SubtitleText.Parent = AnimationGUI
+    
+    -- Add rainbow effect to DummyHook text
+    local RainbowGradient = Instance.new("UIGradient")
+    RainbowGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(130, 195, 65)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(90, 180, 220)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 90, 220))
+    }
+    RainbowGradient.Parent = DummyHookText
+    
+    AnimationGUI.Parent = CoreGui
+    
+    -- Animate the text
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    
+    -- Fade in
+    local fadeInTween = TweenService:Create(Background, tweenInfo, {BackgroundTransparency = 0.7})
+    fadeInTween:Play()
+    
+    -- Scale and fade in text
+    DummyHookText.TextTransparency = 1
+    SubtitleText.TextTransparency = 1
+    DummyHookText.Size = UDim2.new(1, 0, 0, 0)
+    SubtitleText.Size = UDim2.new(1, 0, 0, 0)
+    
+    local textTween1 = TweenService:Create(DummyHookText, tweenInfo, {TextTransparency = 0, Size = UDim2.new(1, 0, 0, 100)})
+    local textTween2 = TweenService:Create(SubtitleText, tweenInfo, {TextTransparency = 0, Size = UDim2.new(1, 0, 0, 50)})
+    
+    textTween1:Play()
+    textTween2:Play()
+    
+    -- Wait for animation to complete
+    wait(2)
+    
+    -- Fade out
+    local fadeOutTween = TweenService:Create(Background, TweenInfo.new(0.5), {BackgroundTransparency = 1})
+    local textFade1 = TweenService:Create(DummyHookText, TweenInfo.new(0.5), {TextTransparency = 1})
+    local textFade2 = TweenService:Create(SubtitleText, TweenInfo.new(0.5), {TextTransparency = 1})
+    
+    fadeOutTween:Play()
+    textFade1:Play()
+    textFade2:Play()
+    
+    wait(0.5)
+    AnimationGUI:Destroy()
+    
+    if callback then
+        callback()
+    end
 end
 
 -- Key System GUI
@@ -866,11 +950,13 @@ function loadMainScript()
 end
 
 -- Initialize
-if KeySystem.Enabled then
-    createKeySystem()
-else
-    DummyHook.Authenticated = true
-    loadMainScript()
-end
+showIntroAnimation(function()
+    if KeySystem.Enabled then
+        createKeySystem()
+    else
+        DummyHook.Authenticated = true
+        loadMainScript()
+    end
+end)
 
 return DummyHook
