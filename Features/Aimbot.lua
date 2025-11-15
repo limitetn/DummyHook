@@ -3,6 +3,21 @@
     Advanced Aimbot with FOV, Smoothing, Visibility Check
 ]]
 
+-- Fix for static analysis tools
+local Color3 = Color3
+local game = game
+local workspace = workspace
+local Ray = Ray
+local Vector2 = Vector2
+local CFrame = CFrame
+local Vector3 = Vector3
+local hookmetamethod = hookmetamethod
+local getrawmetatable = getrawmetatable
+local setreadonly = setreadonly
+local newcclosure = newcclosure
+local typeof = typeof
+local getnamecallmethod = getnamecallmethod
+
 local Aimbot = {
     Enabled = false,
     Settings = {
@@ -253,7 +268,7 @@ local function ApplySilentAim(targetPart)
                         end
                     end
                     
-                    return oldNamecall(self, unpack(args))
+                    return oldNamecall(self, table.unpack(args))
                 end)
                 
                 -- Hook __index for mouse properties
