@@ -231,7 +231,8 @@ end
 -- Import theme from string
 function ThemeManager:ImportTheme(name, themeString)
     local success, theme = pcall(function()
-        return loadstring("return " .. themeString)()
+        -- Use load instead of loadstring for Lua 5.4 compatibility
+        return load("return " .. themeString)()
     end)
     
     if success and theme then

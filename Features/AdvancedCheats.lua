@@ -3,6 +3,16 @@
     Premium features including advanced movement, combat, and game manipulation
 ]]
 
+local game = game
+-- Fix for static analysis tools
+local Instance = Instance
+local Vector3 = Vector3
+local workspace = workspace
+local Enum = Enum
+local Color3 = Color3
+local task = task
+local spawn = spawn
+
 local AdvancedCheats = {
     Enabled = false,
     Settings = {

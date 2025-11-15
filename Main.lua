@@ -5,6 +5,9 @@
     Inspired by Aimware & Skeet UI Design
 ]]
 
+local game = game -- Fix for static analysis tools
+local Color3 = Color3 -- Fix for static analysis tools
+
 local DummyHook = {
     Version = "1.0.0",
     Loaded = false,
@@ -34,7 +37,9 @@ local Camera = workspace.CurrentCamera
 -- Load Modules
 local function loadModule(url)
     local success, result = pcall(function()
-        return loadstring(game:HttpGet(url))()
+        -- Use load instead of loadstring for Lua 5.4 compatibility
+        local content = game:HttpGet(url)
+        return load(content, url, "t", _G)()
     end)
     return success and result or nil
 end
@@ -329,12 +334,16 @@ function loadMainScript()
     local BASE_URL = string.format("https://raw.githubusercontent.com/%s/%s/%s/", GITHUB_USER, GITHUB_REPO, GITHUB_BRANCH)
     
     -- Load UI Library
-    local Library = loadstring(game:HttpGet(BASE_URL .. "UI/Library.lua"))()
+    local Library = (function()
+        local content = game:HttpGet(BASE_URL .. "UI/Library.lua")
+        return load(content, BASE_URL .. "UI/Library.lua", "t", _G)()
+    end)()
     
     -- Load Features with error handling
     local function loadModule(name)
         local success, module = pcall(function()
-            return loadstring(game:HttpGet(BASE_URL .. name))()
+            local content = game:HttpGet(BASE_URL .. name)
+            return load(content, BASE_URL .. name, "t", _G)()
         end)
         
         if not success then
@@ -364,15 +373,21 @@ function loadMainScript()
     local SkinCustomizer = loadModule("Features/SkinCustomizer.lua")
     local Notifications = loadModule("Features/Notifications.lua")
     local AdvancedCheats = loadModule("Features/AdvancedCheats.lua")
+    local KeyManager = loadModule("Features/KeyManager.lua")
     
     -- Check if all modules loaded successfully
-    if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats then
+    if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats or not KeyManager then
         warn("[DummyHook] Failed to load one or more modules. Aborting.")
         return
     end
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
+    
+    -- Initialize Key Manager
+    if KeyManager then
+        KeyManager:Initialize()
+    end
     
     -- Create Main Window
     local Window = Library:CreateWindow({

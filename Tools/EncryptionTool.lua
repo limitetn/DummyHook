@@ -83,7 +83,8 @@ local encryptedMain = "ENCRYPTED_MAIN_CONTENT_PLACEHOLDER"
 
 -- Decrypt and load
 local decryptedMain = DecryptString(encryptedMain)
-loadstring(decryptedMain)()
+-- Use load instead of loadstring for Lua 5.4 compatibility
+load(decryptedMain, "decryptedMain", "t", _G)()
 ]]
     
     return loader

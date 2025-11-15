@@ -8,13 +8,15 @@
 
 local function loadScript(path)
     local content = readfile(path)
-    return loadstring(content)()
+    -- Use load instead of loadstring for Lua 5.4 compatibility
+    return load(content)()
 end
 
 -- Try to load from GitHub first, fallback to local files
 local function smartLoad(githubUrl, localPath)
     local success, result = pcall(function()
-        return loadstring(game:HttpGet(githubUrl))()
+        -- Use load instead of loadstring for Lua 5.4 compatibility
+        return load(game:HttpGet(githubUrl))()
     end)
     
     if success then
