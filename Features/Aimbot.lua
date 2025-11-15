@@ -13,6 +13,9 @@ local Aimbot = {
         TeamCheck = true,
         DrawFOV = true,
         FOVColor = Color3.fromRGB(255, 255, 255),
+        FOVFilled = false,
+        FOVThickness = 2,
+        FOVTransparency = 1,
         PredictMovement = false,
         PredictionAmount = 0.15,
         IgnoreWalls = false,
@@ -386,11 +389,16 @@ end
 local function UpdateFOVCircle()
     if not Aimbot.FOVCircle then return end
     
-    local mouse = GetMouse()
-    Aimbot.FOVCircle.Position = Vector2.new(mouse.X, mouse.Y)
+    local screenSize = Camera.ViewportSize
+    local center = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
+    
+    Aimbot.FOVCircle.Position = center
     Aimbot.FOVCircle.Radius = Aimbot.Settings.FOV
     Aimbot.FOVCircle.Color = Aimbot.Settings.FOVColor
     Aimbot.FOVCircle.Visible = Aimbot.Settings.DrawFOV and Aimbot.Enabled
+    Aimbot.FOVCircle.Filled = Aimbot.Settings.FOVFilled or false
+    Aimbot.FOVCircle.Thickness = Aimbot.Settings.FOVThickness or 2
+    Aimbot.FOVCircle.Transparency = Aimbot.Settings.FOVTransparency or 1
 end
 
 -- Auto Shoot Function
@@ -518,6 +526,22 @@ end
 
 function Aimbot:SetDrawFOV(value)
     self.Settings.DrawFOV = value
+end
+
+function Aimbot:SetFOVFilled(value)
+    self.Settings.FOVFilled = value
+end
+
+function Aimbot:SetFOVThickness(value)
+    self.Settings.FOVThickness = value
+end
+
+function Aimbot:SetFOVTransparency(value)
+    self.Settings.FOVTransparency = value
+end
+
+function Aimbot:SetFOVColor(color)
+    self.Settings.FOVColor = color
 end
 
 function Aimbot:SetPredictMovement(value)
