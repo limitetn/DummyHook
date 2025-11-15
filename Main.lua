@@ -855,13 +855,13 @@ function loadMainScript()
     -- Case Purchasing Section
     local CasePurchaseSection = ExploitsTab:CreateSection("Case Purchasing (No Currency)")
     
-    -- Common case names in Sniper Duels
-    local caseNames = {"Starter Case", "Bronze Case", "Silver Case", "Gold Case", "Platinum Case", "Diamond Case", "Legendary Case", "Mythic Case", "Godly Case"}
+    -- Release case names in Sniper Duels
+    local caseNames = {"Release Case", "Beta Case", "Alpha Case", "Omega Case"}
     
-    local selectedCase = "Starter Case"
+    local selectedCase = "Release Case"
     local purchaseAmount = 1
     
-    CasePurchaseSection:AddDropdown("Select Case", caseNames, "Starter Case", function(value)
+    CasePurchaseSection:AddDropdown("Select Case", caseNames, "Release Case", function(value)
         selectedCase = value
     end)
     
