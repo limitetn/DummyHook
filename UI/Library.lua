@@ -343,10 +343,40 @@ function Library:CreateWindow(config)
         end
     end)
     
-    -- Toggle UI visibility
+    -- Toggle UI visibility with animations
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if not gameProcessed and input.KeyCode == Window.KeyBind then
-            MainFrame.Visible = not MainFrame.Visible
+            if not MainFrame.Visible then
+                -- Opening animation
+                MainFrame.Visible = true
+                MainFrame.BackgroundTransparency = 1
+                MainFrame.Size = UDim2.new(0, 0, 0, 0)
+                MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+                
+                -- Fade in and scale up animation
+                local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                local sizeTween = TweenService:Create(MainFrame, tweenInfo, {
+                    Size = Window.Size,
+                    Position = UDim2.new(0.5, -Window.Size.X.Offset/2, 0.5, -Window.Size.Y.Offset/2),
+                    BackgroundTransparency = 0
+                })
+                sizeTween:Play()
+            else
+                -- Closing animation
+                local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+                local sizeTween = TweenService:Create(MainFrame, tweenInfo, {
+                    Size = UDim2.new(0, 0, 0, 0),
+                    Position = UDim2.new(0.5, 0, 0.5, 0),
+                    BackgroundTransparency = 1
+                })
+                sizeTween:Play()
+                
+                -- Hide after animation
+                spawn(function()
+                    wait(0.3)
+                    MainFrame.Visible = false
+                end)
+            end
         end
     end)
     
@@ -888,6 +918,21 @@ function Library:CreateWindow(config)
     
     -- Unload function
     function Window:Unload()
+        -- Add closing animation
+        if MainFrame then
+            -- Closing animation
+            local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+            local sizeTween = TweenService:Create(MainFrame, tweenInfo, {
+                Size = UDim2.new(0, 0, 0, 0),
+                Position = UDim2.new(0.5, 0, 0.5, 0),
+                BackgroundTransparency = 1
+            })
+            sizeTween:Play()
+            
+            -- Wait for animation to complete
+            wait(0.3)
+        end
+        
         ScreenGui:Destroy()
     end
     

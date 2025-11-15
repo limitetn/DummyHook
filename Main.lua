@@ -803,34 +803,58 @@ function loadMainScript()
     
     -- Skin Detection Section
     local SkinDetectionSection = ExploitsTab:CreateSection("Skin Detection")
-    SkinDetectionSection:AddButton("Refresh Skins", function()
-        local skins = GameExploits:GetDetectedSkins()
-        print("========== Detected Skins ==========")
-        for i, skin in ipairs(skins) do
-            print(i .. ". " .. skin)
-        end
-        print("====================================")
-    end)
     
-    SkinDetectionSection:AddButton("Dupe First Skin", function()
-        local skins = GameExploits:GetDetectedSkins()
-        if #skins > 0 then
-            GameExploits:DupeDetectedSkin(skins[1])
-            Notifications:Success("Skin Duplication", "Attempting to dupe: " .. skins[1], 3)
-        else
-            Notifications:Warning("Skin Duplication", "No skins detected yet!", 3)
-        end
-    end)
+    -- Store reference to skin buttons for dynamic updates
+    local skinButtons = {}
     
-    SkinDetectionSection:AddButton("Dupe All Skins", function()
-        local skins = GameExploits:GetDetectedSkins()
-        if #skins > 0 then
-            for _, skin in ipairs(skins) do
-                GameExploits:DupeDetectedSkin(skin)
+    -- Function to update skin buttons
+    local function updateSkinButtons()
+        -- Clear existing buttons
+        for _, button in pairs(skinButtons) do
+            if button and button.Parent then
+                button:Destroy()
             end
-            Notifications:Success("Skin Duplication", "Attempting to dupe " .. #skins .. " skins", 3)
-        else
-            Notifications:Warning("Skin Duplication", "No skins detected yet!", 3)
+        end
+        skinButtons = {}
+        
+        -- Create buttons for each detected skin
+        local skins = GameExploits:GetDetectedSkins()
+        for _, skin in ipairs(skins) do
+            local button = SkinDetectionSection:AddButton("Dupe: " .. skin, function()
+                GameExploits:DupeDetectedSkin(skin)
+                Notifications:Success("Skin Duplication", "Attempting to dupe: " .. skin, 3)
+            end)
+            table.insert(skinButtons, button)
+        end
+        
+        -- Add refresh button
+        local refreshButton = SkinDetectionSection:AddButton("Refresh Skins (" .. #skins .. " detected)", function()
+            updateSkinButtons()
+        end)
+        table.insert(skinButtons, refreshButton)
+        
+        -- Add dupe all button if skins exist
+        if #skins > 0 then
+            local dupeAllButton = SkinDetectionSection:AddButton("Dupe All Skins (" .. #skins .. ")", function()
+                for _, skin in ipairs(skins) do
+                    GameExploits:DupeDetectedSkin(skin)
+                end
+                Notifications:Success("Skin Duplication", "Attempting to dupe " .. #skins .. " skins", 3)
+            end)
+            table.insert(skinButtons, dupeAllButton)
+        end
+    end
+    
+    -- Initial update
+    updateSkinButtons()
+    
+    -- Periodically update skin buttons
+    spawn(function()
+        while true do
+            wait(5) -- Update every 5 seconds
+            pcall(function()
+                updateSkinButtons()
+            end)
         end
     end)
     
