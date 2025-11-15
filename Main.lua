@@ -41,6 +41,8 @@ end
 
 -- Cool Animation with Music
 local function showIntroAnimation(callback)
+    print("[DummyHook] Starting intro animation")
+    
     local AnimationGUI = Instance.new("ScreenGui")
     AnimationGUI.Name = "DummyHook_Animation"
     AnimationGUI.ResetOnSpawn = false
@@ -115,6 +117,7 @@ local function showIntroAnimation(callback)
     
     wait(0.5)
     AnimationGUI:Destroy()
+    print("[DummyHook] Animation completed")
     
     if callback then
         callback()
@@ -739,8 +742,8 @@ function loadMainScript()
         GameExploits:SetItemDuping(value)
     end)
     SniperDuelsSection:AddButton("Dupe Current Item (x10)", function()
-        -- You need to specify item name
-        local itemName = "Rifle" -- Change this to actual item name
+        -- Automatically detect currently held item
+        local itemName = nil -- Let the function auto-detect
         GameExploits:DupeItem(itemName, 10)
     end)
     SniperDuelsSection:AddToggle("Infinite Money", false, function(value)
