@@ -902,8 +902,211 @@ function Library:CreateWindow(config)
                 })
                 
                 ColorBox.MouseButton1Click:Connect(function()
-                    -- Simple color picker (you can expand this)
-                    callback(ColorPicker.Value)
+                    -- Create color picker popup
+                    local Popup = CreateElement("ScreenGui", {
+                        Name = "ColorPickerPopup",
+                        Parent = game:GetService("CoreGui"),
+                        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+                    })
+                    
+                    local PopupFrame = CreateElement("Frame", {
+                        Size = UDim2.new(0, 200, 0, 250),
+                        Position = UDim2.new(0.5, -100, 0.5, -125),
+                        BackgroundColor3 = Library.Theme.Background,
+                        BorderSizePixel = 0,
+                        Parent = Popup
+                    })
+                    
+                    local PopupCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 6),
+                        Parent = PopupFrame
+                    })
+                    
+                    local Title = CreateElement("TextLabel", {
+                        Size = UDim2.new(1, 0, 0, 30),
+                        BackgroundColor3 = Library.Theme.Secondary,
+                        Text = name,
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 14,
+                        Font = Enum.Font.GothamBold,
+                        Parent = PopupFrame
+                    })
+                    
+                    local TitleCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 6),
+                        Parent = Title
+                    })
+                    
+                    -- RGB Sliders
+                    local RLabel = CreateElement("TextLabel", {
+                        Size = UDim2.new(0.3, 0, 0, 20),
+                        Position = UDim2.new(0.05, 0, 0, 40),
+                        BackgroundTransparency = 1,
+                        Text = "R:",
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+                        Font = Enum.Font.Gotham,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        Parent = PopupFrame
+                    })
+                    
+                    local RSlider = CreateElement("TextBox", {
+                        Size = UDim2.new(0.6, 0, 0, 20),
+                        Position = UDim2.new(0.35, 0, 0, 40),
+                        BackgroundColor3 = Library.Theme.Tertiary,
+                        Text = tostring(math.floor(default.R * 255)),
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+                        Font = Enum.Font.Gotham,
+                        Parent = PopupFrame
+                    })
+                    
+                    local RCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 3),
+                        Parent = RSlider
+                    })
+                    
+                    local GLabel = CreateElement("TextLabel", {
+                        Size = UDim2.new(0.3, 0, 0, 20),
+                        Position = UDim2.new(0.05, 0, 0, 70),
+                        BackgroundTransparency = 1,
+                        Text = "G:",
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+                        Font = Enum.Font.Gotham,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        Parent = PopupFrame
+                    })
+                    
+                    local GSlider = CreateElement("TextBox", {
+                        Size = UDim2.new(0.6, 0, 0, 20),
+                        Position = UDim2.new(0.35, 0, 0, 70),
+                        BackgroundColor3 = Library.Theme.Tertiary,
+                        Text = tostring(math.floor(default.G * 255)),
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+                        Font = Enum.Font.Gotham,
+                        Parent = PopupFrame
+                    })
+                    
+                    local GCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 3),
+                        Parent = GSlider
+                    })
+                    
+                    local BLabel = CreateElement("TextLabel", {
+                        Size = UDim2.new(0.3, 0, 0, 20),
+                        Position = UDim2.new(0.05, 0, 0, 100),
+                        BackgroundTransparency = 1,
+                        Text = "B:",
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+                        Font = Enum.Font.Gotham,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        Parent = PopupFrame
+                    })
+                    
+                    local BSlider = CreateElement("TextBox", {
+                        Size = UDim2.new(0.6, 0, 0, 20),
+                        Position = UDim2.new(0.35, 0, 0, 100),
+                        BackgroundColor3 = Library.Theme.Tertiary,
+                        Text = tostring(math.floor(default.B * 255)),
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+                        Font = Enum.Font.Gotham,
+                        Parent = PopupFrame
+                    })
+                    
+                    local BCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 3),
+                        Parent = BSlider
+                    })
+                    
+                    -- Preview Box
+                    local PreviewBox = CreateElement("Frame", {
+                        Size = UDim2.new(0.8, 0, 0, 40),
+                        Position = UDim2.new(0.1, 0, 0, 130),
+                        BackgroundColor3 = default,
+                        Parent = PopupFrame
+                    })
+                    
+                    local PreviewCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 3),
+                        Parent = PreviewBox
+                    })
+                    
+                    -- Buttons
+                    local ConfirmButton = CreateElement("TextButton", {
+                        Size = UDim2.new(0.4, 0, 0, 25),
+                        Position = UDim2.new(0.05, 0, 0, 180),
+                        BackgroundColor3 = Library.Theme.Accent,
+                        Text = "Confirm",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 12,
+                        Font = Enum.Font.GothamBold,
+                        Parent = PopupFrame
+                    })
+                    
+                    local ConfirmCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 3),
+                        Parent = ConfirmButton
+                    })
+                    
+                    local CancelButton = CreateElement("TextButton", {
+                        Size = UDim2.new(0.4, 0, 0, 25),
+                        Position = UDim2.new(0.55, 0, 0, 180),
+                        BackgroundColor3 = Library.Theme.Secondary,
+                        Text = "Cancel",
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+                        Font = Enum.Font.GothamBold,
+                        Parent = PopupFrame
+                    })
+                    
+                    local CancelCorner = CreateElement("UICorner", {
+                        CornerRadius = UDim.new(0, 3),
+                        Parent = CancelButton
+                    })
+                    
+                    -- Update preview when text changes
+                    local function updatePreview()
+                        local r = tonumber(RSlider.Text) or 0
+                        local g = tonumber(GSlider.Text) or 0
+                        local b = tonumber(BSlider.Text) or 0
+                        
+                        r = math.clamp(r, 0, 255)
+                        g = math.clamp(g, 0, 255)
+                        b = math.clamp(b, 0, 255)
+                        
+                        PreviewBox.BackgroundColor3 = Color3.fromRGB(r, g, b)
+                    end
+                    
+                    RSlider.FocusLost:Connect(updatePreview)
+                    GSlider.FocusLost:Connect(updatePreview)
+                    BSlider.FocusLost:Connect(updatePreview)
+                    
+                    -- Initialize preview
+                    updatePreview()
+                    
+                    ConfirmButton.MouseButton1Click:Connect(function()
+                        local r = tonumber(RSlider.Text) or 0
+                        local g = tonumber(GSlider.Text) or 0
+                        local b = tonumber(BSlider.Text) or 0
+                        
+                        r = math.clamp(r, 0, 255)
+                        g = math.clamp(g, 0, 255)
+                        b = math.clamp(b, 0, 255)
+                        
+                        local newColor = Color3.fromRGB(r, g, b)
+                        ColorPicker.Value = newColor
+                        ColorBox.BackgroundColor3 = newColor
+                        callback(newColor)
+                        Popup:Destroy()
+                    end)
+                    
+                    CancelButton.MouseButton1Click:Connect(function()
+                        Popup:Destroy()
+                    end)
                 end)
                 
                 return ColorPicker
