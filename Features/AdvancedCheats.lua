@@ -23,6 +23,9 @@ local AdvancedCheats = {
         ReachDistance = 20,
         Criticals = false,
         CriticalChance = 50,
+        AutoPistol = false,
+        HitBoxExpander = false,
+        HitBoxScale = 1.5,
         
         -- Game Manipulation
         AutoFarm = false,
@@ -37,6 +40,12 @@ local AdvancedCheats = {
         XRay = false,
         NoFog = false,
         NoCameraShake = false,
+        FakeLag = false,
+        FakeLagAmount = 100,
+        
+        -- Network
+        PingSpike = false,
+        PingSpikeAmount = 200,
         
         -- Exploits
         AntiAFK = false,
@@ -44,7 +53,8 @@ local AdvancedCheats = {
         ForceField = false,
         AntiLog = false
     },
-    Connections = {}
+    Connections = {},
+    OriginalParts = {}
 }
 
 local Players = game:GetService("Players")
@@ -331,6 +341,135 @@ function AdvancedCheats:SetAntiAFK(enabled)
     end
 end
 
+-- Auto Pistol
+function AdvancedCheats:SetAutoPistol(enabled)
+    self.Settings.AutoPistol = enabled
+    
+    if self.Connections.AutoPistol then
+        self.Connections.AutoPistol:Disconnect()
+        self.Connections.AutoPistol = nil
+    end
+    
+    if enabled then
+        self.Connections.AutoPistol = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+            if gameProcessed then return end
+            
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                local character = GetCharacter()
+                if character then
+                    local tool = character:FindFirstChildOfClass("Tool")
+                    if tool and tool:FindFirstChild("Fire") then
+                        -- Rapid fire for pistols
+                        spawn(function()
+                            for i = 1, 5 do
+                                pcall(function()
+                                    tool.Fire:FireServer()
+                                end)
+                                task.wait(0.05)
+                            end
+                        end)
+                    end
+                end
+            end
+        end)
+    end
+end
+
+-- HitBox Expander
+function AdvancedCheats:SetHitBoxExpander(enabled)
+    self.Settings.HitBoxExpander = enabled
+    
+    if self.Connections.HitBoxExpander then
+        self.Connections.HitBoxExpander:Disconnect()
+        self.Connections.HitBoxExpander = nil
+    end
+    
+    local function resizeHitBoxes()
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                local character = player.Character
+                if character then
+                    for _, part in pairs(character:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            if enabled then
+                                -- Store original size
+                                if not self.OriginalParts[part] then
+                                    self.OriginalParts[part] = part.Size
+                                end
+                                -- Expand hitbox
+                                part.Size = part.Size * self.Settings.HitBoxScale
+                            else
+                                -- Restore original size
+                                if self.OriginalParts[part] then
+                                    part.Size = self.OriginalParts[part]
+                                    self.OriginalParts[part] = nil
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    if enabled then
+        -- Resize existing players
+        resizeHitBoxes()
+        
+        -- Watch for new characters
+        self.Connections.HitBoxExpander = Players.PlayerAdded:Connect(function(player)
+            player.CharacterAdded:Connect(function(character)
+                task.wait(1) -- Wait for character to load
+                resizeHitBoxes()
+            end)
+        end)
+        
+        -- Watch for character respawn
+        self.Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(function(character)
+            task.wait(1) -- Wait for character to load
+            resizeHitBoxes()
+        end)
+    else
+        -- Restore all hitboxes
+        resizeHitBoxes()
+    end
+end
+
+-- Fake Lag
+function AdvancedCheats:SetFakeLag(enabled)
+    self.Settings.FakeLag = enabled
+    
+    if self.Connections.FakeLag then
+        self.Connections.FakeLag:Disconnect()
+        self.Connections.FakeLag = nil
+    end
+    
+    if enabled then
+        self.Connections.FakeLag = RunService.Heartbeat:Connect(function()
+            -- Fake lag by delaying network packets
+            -- This is a simplified version - real implementations are more complex
+            task.wait(self.Settings.FakeLagAmount / 1000)
+        end)
+    end
+end
+
+-- Ping Spike
+function AdvancedCheats:SetPingSpike(enabled)
+    self.Settings.PingSpike = enabled
+    
+    if self.Connections.PingSpike then
+        self.Connections.PingSpike:Disconnect()
+        self.Connections.PingSpike = nil
+    end
+    
+    if enabled then
+        self.Connections.PingSpike = RunService.Heartbeat:Connect(function()
+            -- Simulate high ping by adding delays
+            task.wait(self.Settings.PingSpikeAmount / 1000)
+        end)
+    end
+end
+
 -- Cleanup function
 function AdvancedCheats:Cleanup()
     for _, connection in pairs(self.Connections) do
@@ -347,6 +486,10 @@ function AdvancedCheats:Cleanup()
     self:SetInfiniteJump(false)
     self:SetFullBright(false)
     self:SetGodMode(false)
+    self:SetAutoPistol(false)
+    self:SetHitBoxExpander(false)
+    self:SetFakeLag(false)
+    self:SetPingSpike(false)
 end
 
 return AdvancedCheats

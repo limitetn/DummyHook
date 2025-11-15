@@ -736,6 +736,36 @@ function loadMainScript()
         AdvancedCheats.Settings.CriticalChance = value
     end)
     
+    AdvancedCombatSection:AddToggle("Auto Pistol", false, function(value)
+        AdvancedCheats:SetAutoPistol(value)
+    end)
+    
+    AdvancedCombatSection:AddToggle("HitBox Expander", false, function(value)
+        AdvancedCheats:SetHitBoxExpander(value)
+    end)
+    AdvancedCombatSection:AddSlider("HitBox Scale", 1, 3, 1.5, function(value)
+        AdvancedCheats.Settings.HitBoxScale = value
+        -- Update hitbox expander if enabled
+        if AdvancedCheats.Settings.HitBoxExpander then
+            AdvancedCheats:SetHitBoxExpander(false)
+            AdvancedCheats:SetHitBoxExpander(true)
+        end
+    end)
+    
+    AdvancedCombatSection:AddToggle("Fake Lag", false, function(value)
+        AdvancedCheats:SetFakeLag(value)
+    end)
+    AdvancedCombatSection:AddSlider("Fake Lag Amount (ms)", 50, 500, 100, function(value)
+        AdvancedCheats.Settings.FakeLagAmount = value
+    end)
+    
+    AdvancedCombatSection:AddToggle("Ping Spike", false, function(value)
+        AdvancedCheats:SetPingSpike(value)
+    end)
+    AdvancedCombatSection:AddSlider("Ping Spike Amount (ms)", 100, 1000, 200, function(value)
+        AdvancedCheats.Settings.PingSpikeAmount = value
+    end)
+    
     -- Exploits Tab (Game-specific)
     local SniperDuelsSection = ExploitsTab:CreateSection("Sniper Duels")
     SniperDuelsSection:AddToggle("Item Duping (Enable First)", false, function(value)
@@ -769,6 +799,39 @@ function loadMainScript()
     end)
     SniperDuelsSection:AddToggle("Instant Kill", false, function(value)
         GameExploits:SetInstantKill(value)
+    end)
+    
+    -- Skin Detection Section
+    local SkinDetectionSection = ExploitsTab:CreateSection("Skin Detection")
+    SkinDetectionSection:AddButton("Refresh Skins", function()
+        local skins = GameExploits:GetDetectedSkins()
+        print("========== Detected Skins ==========")
+        for i, skin in ipairs(skins) do
+            print(i .. ". " .. skin)
+        end
+        print("====================================")
+    end)
+    
+    SkinDetectionSection:AddButton("Dupe First Skin", function()
+        local skins = GameExploits:GetDetectedSkins()
+        if #skins > 0 then
+            GameExploits:DupeDetectedSkin(skins[1])
+            Notifications:Success("Skin Duplication", "Attempting to dupe: " .. skins[1], 3)
+        else
+            Notifications:Warning("Skin Duplication", "No skins detected yet!", 3)
+        end
+    end)
+    
+    SkinDetectionSection:AddButton("Dupe All Skins", function()
+        local skins = GameExploits:GetDetectedSkins()
+        if #skins > 0 then
+            for _, skin in ipairs(skins) do
+                GameExploits:DupeDetectedSkin(skin)
+            end
+            Notifications:Success("Skin Duplication", "Attempting to dupe " .. #skins .. " skins", 3)
+        else
+            Notifications:Warning("Skin Duplication", "No skins detected yet!", 3)
+        end
     end)
     
     local UniversalSection = ExploitsTab:CreateSection("Universal Exploits")

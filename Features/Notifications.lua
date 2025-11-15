@@ -69,7 +69,9 @@ function Notifications:Initialize()
     })
     
     layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        self.NotificationFrame.CanvasSize = UDim2.new(0, 300, 0, layout.AbsoluteContentSize.Y + 20)
+        if self.NotificationFrame and layout.AbsoluteContentSize then
+            self.NotificationFrame.CanvasSize = UDim2.new(0, 300, 0, layout.AbsoluteContentSize.Y + 20)
+        end
     end)
 end
 
