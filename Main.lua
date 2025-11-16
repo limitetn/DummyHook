@@ -289,7 +289,10 @@ local function createKeySystem()
             wait(1)
             KeyGUI:Destroy()
             DummyHook.Authenticated = true
-            loadMainScript()
+            local success, err = pcall(loadMainScript)
+            if not success then
+                warn("[DummyHook] Failed to load main script: " .. tostring(err))
+            end
         else
             StatusLabel.Text = "✗ Invalid Key! Please try again."
             StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
@@ -333,10 +336,27 @@ function loadMainScript()
     local GITHUB_BRANCH = "main"
     local BASE_URL = string.format("https://raw.githubusercontent.com/%s/%s/%s/", GITHUB_USER, GITHUB_REPO, GITHUB_BRANCH)
     
-    -- Load UI Library
+    -- Load UI Library with error handling
     local Library = (function()
-        local content = game:HttpGet(BASE_URL .. "UI/Library.lua")
-        return load(content, BASE_URL .. "UI/Library.lua", "t", _G)()
+        local success, content = pcall(function()
+            return game:HttpGet(BASE_URL .. "UI/Library.lua")
+        end)
+        
+        if not success then
+            warn("[DummyHook] Failed to fetch UI Library: " .. tostring(content))
+            return nil
+        end
+        
+        local loadSuccess, library = pcall(function()
+            return load(content, BASE_URL .. "UI/Library.lua", "t", _G)()
+        end)
+        
+        if not loadSuccess or library == nil then
+            warn("[DummyHook] Failed to load UI Library: " .. tostring(library))
+            return nil
+        end
+        
+        return library
     end)()
     
     -- Load Features with error handling
@@ -374,6 +394,12 @@ function loadMainScript()
     local Notifications = loadModule("Features/Notifications.lua")
     local AdvancedCheats = loadModule("Features/AdvancedCheats.lua")
     local KeyManager = loadModule("Features/KeyManager.lua")
+    
+    -- Check if UI Library loaded successfully
+    if not Library then
+        warn("[DummyHook] Failed to load UI Library. Aborting.")
+        return
+    end
     
     -- Check if all modules loaded successfully
     if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats or not KeyManager then

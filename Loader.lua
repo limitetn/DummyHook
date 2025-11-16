@@ -3,6 +3,10 @@
     For local testing without GitHub hosting
 ]]
 
+-- Fix for static analysis tools
+local readfile = readfile
+local game = game
+
 -- This loader is for local testing purposes
 -- Replace file paths with your actual GitHub raw URLs when hosting
 
