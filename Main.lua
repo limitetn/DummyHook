@@ -17,4 +17,35 @@
         end
     end)
 
+    -- Case Opening Section
+    local CaseOpeningSection = SniperDuelsTab:AddSection("Case Opening")
+    CaseOpeningSection:AddToggle("Auto Open Cases", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoOpenCases = state
+            SniperDuels:SetAutoOpenCases(state)
+        end
+    end)
+    
+    CaseOpeningSection:AddSlider("Case Open Speed", 1, 1, 10, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.CaseOpenSpeed = value
+        end
+    end)
+    
+    -- Updated case names to match Sniper Duels actual case identifiers
+    local caseNames = {
+        "Release",           -- Release Case
+        "Halloween2025",     -- Hallows Basket
+        "Beta",
+        "Alpha", 
+        "Omega"
+    }
+    
+    CaseOpeningSection:AddDropdown("Open Specific Case", caseNames, function(caseName)
+        if SniperDuels then
+            SniperDuels:OpenCase(caseName)
+            Notifications:Success("Sniper Duels", "Opening " .. caseName .. " case!", 3)
+        end
+    end)
+
     -- Config Tab

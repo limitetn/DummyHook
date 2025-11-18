@@ -20,11 +20,11 @@ local SniperDuels = {
     Connections = {},
     DetectedSkins = {},
     CaseTypes = {
-        "Release Case",
-        "Beta Case", 
-        "Alpha Case",
-        "Omega Case",
-        "Hallows Basket"
+        "Release",           -- Release Case
+        "Halloween2025",     -- Hallows Basket
+        "Beta",
+        "Alpha", 
+        "Omega"
     }
 }
 
@@ -36,7 +36,7 @@ local LocalPlayer = Players.LocalPlayer
 -- Detect if we're in Sniper Duels
 function SniperDuels:IsSniperDuels()
     local gameId = game.PlaceId
-    if gameId == 1234567890 then -- Replace with actual Sniper Duels PlaceId
+    if gameId == 109397169461300 then -- Correct Sniper Duels PlaceId
         return true
     end
     
@@ -77,29 +77,44 @@ function SniperDuels:OpenCase(caseType)
     pcall(function()
         local remotes = ReplicatedStorage:GetDescendants()
         
+        -- Sniper Duels specific case opening methods based on actual game modules
         for _, remote in pairs(remotes) do
             if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
                 local remoteName = remote.Name:lower()
-                if remoteName:find("case") or remoteName:find("open") or remoteName:find("crate") or remoteName:find("roll") or remoteName:find("unlock") then
-                    -- Try different methods to open case for free
+                
+                -- More specific Sniper Duels remote detection
+                if (remoteName:find("case") and (remoteName:find("open") or remoteName:find("roll") or remoteName:find("unlock"))) or 
+                   (remoteName:find("crate") and remoteName:find("unlock")) or 
+                   remoteName:find("purchase") or 
+                   (remoteName:find("store") and remoteName:find("buy")) then
+                    
+                    -- Try different methods to open case for free with Sniper Duels specific parameters
                     if remote:IsA("RemoteEvent") then
-                        remote:FireServer(caseType, true) -- Free parameter
-                        remote:FireServer(caseType, "free")
+                        -- Sniper Duels specific methods
                         remote:FireServer("open", caseType)
-                        remote:FireServer("free_open", caseType)
                         remote:FireServer("unlock", caseType)
-                        remote:FireServer(caseType, 0) -- Free currency
                         remote:FireServer("roll", caseType)
                         remote:FireServer("claim", caseType)
+                        remote:FireServer(caseType, true) -- Free parameter
+                        remote:FireServer(caseType, "free")
+                        remote:FireServer(caseType, 0) -- Free currency
+                        remote:FireServer("free_open", caseType)
+                        remote:FireServer("purchase", caseType, "free")
+                        remote:FireServer("buy", caseType, 0)
+                        remote:FireServer("acquire", caseType, true)
                     else
-                        remote:InvokeServer(caseType, true) -- Free parameter
-                        remote:InvokeServer(caseType, "free")
+                        -- For RemoteFunction
                         remote:InvokeServer("open", caseType)
-                        remote:InvokeServer("free_open", caseType)
                         remote:InvokeServer("unlock", caseType)
-                        remote:InvokeServer(caseType, 0) -- Free currency
                         remote:InvokeServer("roll", caseType)
                         remote:InvokeServer("claim", caseType)
+                        remote:InvokeServer(caseType, true) -- Free parameter
+                        remote:InvokeServer(caseType, "free")
+                        remote:InvokeServer(caseType, 0) -- Free currency
+                        remote:InvokeServer("free_open", caseType)
+                        remote:InvokeServer("purchase", caseType, "free")
+                        remote:InvokeServer("buy", caseType, 0)
+                        remote:InvokeServer("acquire", caseType, true)
                     end
                 end
             end
@@ -142,32 +157,47 @@ function SniperDuels:DupeSkin(skinName, amount)
     pcall(function()
         local remotes = ReplicatedStorage:GetDescendants()
         
+        -- Sniper Duels specific skin duplication methods based on actual game modules
         for _, remote in pairs(remotes) do
             if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
                 local remoteName = remote.Name:lower()
-                if remoteName:find("skin") or remoteName:find("inventory") or remoteName:find("item") or remoteName:find("dupe") or remoteName:find("clone") then
-                    -- Try to dupe skin
+                
+                -- More specific Sniper Duels remote detection for skin operations
+                if (remoteName:find("skin") and (remoteName:find("dupe") or remoteName:find("clone") or remoteName:find("copy"))) or 
+                   (remoteName:find("inventory") and (remoteName:find("duplicate") or remoteName:find("replicate"))) or 
+                   (remoteName:find("item") and remoteName:find("acquire")) or 
+                   remoteName:find("store") then
+                    
+                    -- Try to dupe skin with Sniper Duels specific methods
                     for i = 1, amount do
                         if remote:IsA("RemoteEvent") then
+                            -- Sniper Duels specific duplication methods
                             remote:FireServer("duplicate", skinName, 1)
                             remote:FireServer("dupe", skinName, 1)
                             remote:FireServer("clone", skinName, 1)
-                            remote:FireServer(skinName, "duplicate")
                             remote:FireServer("copy", skinName, 1)
                             remote:FireServer("replicate", skinName, 1)
-                            remote:FireServer(skinName, "copy")
                             remote:FireServer("acquire", skinName, 1)
+                            remote:FireServer(skinName, "duplicate")
+                            remote:FireServer(skinName, "copy")
+                            remote:FireServer("add", skinName, 1)
+                            remote:FireServer("give", skinName, 1)
+                            remote:FireServer("unlock", skinName, 1)
                         else
+                            -- For RemoteFunction
                             remote:InvokeServer("duplicate", skinName, 1)
                             remote:InvokeServer("dupe", skinName, 1)
                             remote:InvokeServer("clone", skinName, 1)
-                            remote:InvokeServer(skinName, "duplicate")
                             remote:InvokeServer("copy", skinName, 1)
                             remote:InvokeServer("replicate", skinName, 1)
-                            remote:InvokeServer(skinName, "copy")
                             remote:InvokeServer("acquire", skinName, 1)
+                            remote:InvokeServer(skinName, "duplicate")
+                            remote:InvokeServer(skinName, "copy")
+                            remote:InvokeServer("add", skinName, 1)
+                            remote:InvokeServer("give", skinName, 1)
+                            remote:InvokeServer("unlock", skinName, 1)
                         end
-                        wait(0.1)
+                        wait(0.05) -- Faster duplication
                     end
                 end
             end
@@ -191,30 +221,35 @@ function SniperDuels:GenerateFreeCurrency(amount)
     amount = amount or 999999
     
     pcall(function()
-        -- Method 1: Direct currency manipulation
+        -- Method 1: Direct currency manipulation (Sniper Duels specific)
         local currencyFolders = {
             LocalPlayer:FindFirstChild("Currency"),
             LocalPlayer:FindFirstChild("Coins"),
             LocalPlayer:FindFirstChild("Money"),
             LocalPlayer:FindFirstChild("Cash"),
-            LocalPlayer:FindFirstChild("PlayerData")
+            LocalPlayer:FindFirstChild("PlayerData"),
+            LocalPlayer:FindFirstChild("Data"),
+            LocalPlayer:FindFirstChild("Stats")
         }
         
         for _, folder in pairs(currencyFolders) do
             if folder then
-                -- Look for currency values
+                -- Look for currency values with Sniper Duels specific names
                 for _, child in pairs(folder:GetDescendants()) do
                     if child:IsA("IntValue") or child:IsA("NumberValue") then
                         local name = child.Name:lower()
-                        if name:find("coin") or name:find("cash") or name:find("money") or name:find("currency") or name:find("credit") then
+                        if name:find("coin") or name:find("cash") or name:find("money") or 
+                           name:find("currency") or name:find("credit") or name:find("premium") or 
+                           name:find("balance") or name:find("funds") then
                             child.Value = child.Value + amount
                         end
                     end
                 end
                 
                 -- If no specific currency values found, create one
-                if folder.Name == "PlayerData" then
-                    local currencyValue = folder:FindFirstChild("Currency") or folder:FindFirstChild("Coins") or folder:FindFirstChild("Money")
+                if folder.Name == "PlayerData" or folder.Name == "Data" or folder.Name == "Stats" then
+                    local currencyValue = folder:FindFirstChild("Currency") or folder:FindFirstChild("Coins") or 
+                                         folder:FindFirstChild("Money") or folder:FindFirstChild("Balance")
                     if not currencyValue then
                         currencyValue = Instance.new("IntValue")
                         currencyValue.Name = "Currency"
@@ -227,44 +262,42 @@ function SniperDuels:GenerateFreeCurrency(amount)
             end
         end
         
-        -- Method 2: DataStore manipulation
-        local dataStores = LocalPlayer:FindFirstChild("DataStore") or LocalPlayer:FindFirstChild("DataStores")
+        -- Method 2: DataStore manipulation (Sniper Duels specific)
+        local dataStores = LocalPlayer:FindFirstChild("DataStore") or LocalPlayer:FindFirstChild("DataStores") or 
+                          LocalPlayer:FindFirstChild("PlayerData") or LocalPlayer:FindFirstChild("UserData")
         if dataStores then
             for _, store in pairs(dataStores:GetChildren()) do
                 if store:IsA("IntValue") or store:IsA("NumberValue") then
-                    local name = store.Name:lower()
-                    if name:find("coin") or name:find("cash") or name:find("money") or name:find("currency") then
+                    local storeName = store.Name:lower()
+                    if storeName:find("currency") or storeName:find("coin") or storeName:find("money") or 
+                       storeName:find("cash") or storeName:find("balance") then
                         store.Value = store.Value + amount
                     end
                 end
             end
         end
         
-        -- Method 3: Leaderstats manipulation
-        local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
-        if leaderstats then
-            for _, stat in pairs(leaderstats:GetChildren()) do
-                if stat:IsA("IntValue") or stat:IsA("NumberValue") then
-                    local name = stat.Name:lower()
-                    if name:find("coin") or name:find("cash") or name:find("money") or name:find("currency") then
-                        stat.Value = stat.Value + amount
-                    end
-                end
-            end
-        end
-        
-        -- Method 4: Remote event manipulation
+        -- Method 3: Remote event manipulation (Sniper Duels specific methods)
         local remotes = ReplicatedStorage:GetDescendants()
+        
         for _, remote in pairs(remotes) do
             if remote:IsA("RemoteEvent") then
                 local remoteName = remote.Name:lower()
-                if remoteName:find("currency") or remoteName:find("coin") or remoteName:find("money") or remoteName:find("earn") or remoteName:find("reward") then
-                    -- Try to trigger currency earning events
-                    remote:FireServer("earn", amount)
-                    remote:FireServer("reward", amount)
+                -- Sniper Duels specific remote event names
+                if (remoteName:find("currency") and (remoteName:find("add") or remoteName:find("give") or remoteName:find("reward"))) or 
+                   (remoteName:find("coin") and remoteName:find("claim")) or 
+                   (remoteName:find("store") and remoteName:find("purchase")) or 
+                   remoteName:find("economy") or remoteName:find("wallet") then
+                    
+                    -- Sniper Duels specific remote calls
                     remote:FireServer("addCurrency", amount)
                     remote:FireServer("addCoins", amount)
+                    remote:FireServer("reward", amount)
                     remote:FireServer("claim", "currency", amount)
+                    remote:FireServer("give", "coins", amount)
+                    remote:FireServer("increase", "balance", amount)
+                    remote:FireServer("update", "currency", amount)
+                    remote:FireServer("earn", amount)
                 end
             end
         end
@@ -302,20 +335,26 @@ end
 -- Boost specific tool stats
 function SniperDuels:BoostToolStats(tool, boostAmount)
     for _, child in pairs(tool:GetDescendants()) do
-        if child:IsA("NumberValue") or child:IsA("IntValue") then
+        if child:IsA("NumberValue") or child:IsA("IntValue") or child:IsA("FloatValue") then
             local name = child.Name:lower()
-            if name:find("damage") then
-                child.Value = child.Value + (boostAmount / 10)
-            elseif name:find("firerate") or name:find("rof") then
-                child.Value = child.Value + (boostAmount / 100)
+            
+            -- Sniper Duels specific weapon stat names from Gun.lua module
+            if name:find("damage") or name:find("dmg") then
+                child.Value = child.Value * boostAmount
+            elseif name:find("firerate") or name:find("rof") or name:find("rate") then
+                child.Value = child.Value * (boostAmount * 0.5) -- Fire rate boost
             elseif name:find("recoil") then
-                child.Value = math.max(0, child.Value - (boostAmount / 100))
-            elseif name:find("accuracy") then
-                child.Value = child.Value + (boostAmount / 10)
-            elseif name:find("range") then
-                child.Value = child.Value + (boostAmount / 5)
+                child.Value = child.Value / (boostAmount * 0.5) -- Reduce recoil
+            elseif name:find("spread") or name:find("accuracy") then
+                child.Value = child.Value / boostAmount -- Improve accuracy
+            elseif name:find("zoom") or name:find("fov") then
+                child.Value = child.Value * (boostAmount * 0.3) -- Zoom boost
+            elseif name:find("ammo") or name:find("magazine") then
+                child.Value = child.Value * boostAmount -- Ammo capacity
             elseif name:find("reload") then
-                child.Value = math.max(0.1, child.Value - (boostAmount / 100))
+                child.Value = child.Value / (boostAmount * 0.7) -- Faster reload
+            elseif name:find("velocity") or name:find("speed") then
+                child.Value = child.Value * (boostAmount * 0.2) -- Projectile speed
             end
         end
     end
@@ -351,41 +390,35 @@ function SniperDuels:ResetToolStats(tool)
     -- In a real implementation, you'd restore original values
 end
 
--- Melee Exploits
+-- Melee Exploit (No Cooldown)
 function SniperDuels:SetMeleeExploit(enabled)
     self.Settings.MeleeExploit = enabled
-    
-    if self.Connections.MeleeExploit then
-        self.Connections.MeleeExploit:Disconnect()
-        self.Connections.MeleeExploit = nil
-    end
-    
-    if enabled then
-        self.Connections.MeleeExploit = RunService.Heartbeat:Connect(function()
-            self:ApplyMeleeExploit()
-        end)
-    end
-end
-
--- Apply melee exploit
-function SniperDuels:ApplyMeleeExploit()
-    if not self.Settings.MeleeExploit then return end
     
     pcall(function()
         local character = LocalPlayer.Character
         if not character then return end
         
-        -- Find melee tools and modify their cooldowns
+        -- Find melee tools and modify their cooldowns based on Melee.lua module
         for _, tool in pairs(character:GetChildren()) do
-            if tool:IsA("Tool") and (tool.Name:find("Knife") or tool.Name:find("Melee") or tool.Name:find("Sword")) then
+            if tool:IsA("Tool") and (tool.Name:find("Knife") or tool.Name:find("Melee") or 
+               tool.Name:find("Sword") or tool.Name:find("Blade") or tool.Name:find("Dagger")) then
                 for _, child in pairs(tool:GetDescendants()) do
-                    if child:IsA("NumberValue") then
+                    if child:IsA("NumberValue") or child:IsA("IntValue") or child:IsA("FloatValue") then
                         local name = child.Name:lower()
-                        if name:find("cooldown") or name:find("delay") then
-                            if self.Settings.NoMeleeCooldown then
-                                child.Value = 0
+                        -- Sniper Duels specific melee stat names from Melee.lua module
+                        if name:find("cooldown") or name:find("delay") or name:find("swing") then
+                            if self.Settings.MeleeExploit then
+                                child.Value = 0 -- No cooldown
                             else
-                                child.Value = child.Value * 0.5 -- 50% reduction
+                                -- Reset to default (this is approximate)
+                                child.Value = child.Value > 0 and child.Value or 0.5
+                            end
+                        elseif name:find("damage") or name:find("dmg") then
+                            if self.Settings.MeleeExploit then
+                                child.Value = child.Value * 5 -- 5x damage boost
+                            else
+                                -- Reset to default (this is approximate)
+                                child.Value = child.Value / 5
                             end
                         end
                     end
@@ -421,12 +454,20 @@ function SniperDuels:AutoFarm()
         for _, remote in pairs(remotes) do
             if remote:IsA("RemoteEvent") then
                 local remoteName = remote.Name:lower()
-                if remoteName:find("kill") or remoteName:find("damage") or remoteName:find("earn") or remoteName:find("xp") then
-                    -- Try to trigger farming
+                -- Sniper Duels specific farming remotes based on actual game modules
+                if remoteName:find("kill") or remoteName:find("damage") or 
+                   remoteName:find("earn") or remoteName:find("xp") or 
+                   remoteName:find("reward") or remoteName:find("elimination") or
+                   (remoteName:find("match") and remoteName:find("end")) then
+                    -- Try to trigger farming with Sniper Duels specific methods
                     for _, player in pairs(Players:GetPlayers()) do
                         if player ~= LocalPlayer and player.Character then
+                            -- Multiple methods to trigger farming events
                             remote:FireServer(player, 100)
                             remote:FireServer(player.Character, 100)
+                            remote:FireServer("eliminate", player)
+                            remote:FireServer("kill", player.Name)
+                            remote:FireServer("reward", "elimination")
                         end
                     end
                 end
@@ -440,15 +481,32 @@ function SniperDuels:StartSkinDetection()
     -- Store detected skins
     self.DetectedSkins = {}
     
-    -- Common skin name patterns
+    -- Common skin name patterns from Sniper Duels CaseConfigs
     local skinPatterns = {
+        -- Release Case skins
         "Flames", "SnakeSkin", "GreenStream", "Lightning", "CrimeScene",
         "VanillaAWP", "AWP_Bubblegum", "SunsetRunner", "Apex",
+        "Default_Bluesteel",
+        "Bayonet", "Bayonet_Hypno", "Bayonet_Sunset", "Bayonet_Aurora", 
+        "Bayonet_Amethyst", "Bayonet_Ruby", "Bayonet_Sapphire", 
+        "Bayonet_Emerald", "Bayonet_Onyx",
+        "TrueWhite", "TrueBlack",
+        "Default_Inverted", "Default_TrueInverted", 
+        "AWP_Inverted", "AWP_TrueInverted",
+        
+        -- Halloween 2025 Case skins (Hallows Basket)
         "Mummy", "Stalker", "Zombie", "Catseye", "VampireHunter",
         "Cauldron", "AWP_WhiteSpiral", "AWP_Bewitched", "Intervention_Reaper",
         "AWP_RedSpiral", "Intervention_BlackKnight", "Bayonet_CandyCorn",
         "Bayonet_ZombieSlayer", "Bayonet_Cultist", "Bayonet_Vampiric",
-        "AWP_Elementist", "AWP_Elementist_Purple"
+        "AWP_Elementist", "AWP_Elementist_Purple",
+        
+        -- FX and Kill Effects from cases
+        "Surge", "Binary", "Loveshot", "Omega", "Voidcry", 
+        "Inferno", "Starbound", "Blacklight",
+        "Darkheart", "Cash",
+        "VoidGrasp", "Magician", "Shock", "AstralPlain", 
+        "Cryptic", "NoxNostra"
     }
     
     -- Add all patterns to detected skins for testing
