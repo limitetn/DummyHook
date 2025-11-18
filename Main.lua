@@ -326,7 +326,7 @@ local function LoadMainScript()
         end
     end)
     
-    AimbotSection:AddDropdown("Target Part", {"Head", "Torso", "Closest"}, function(option)
+    AimbotSection:AddDropdown("Target Part", {"Head", "Torso", "Closest"}, "Head", function(option)
         if Aimbot then
             Aimbot.Settings.TargetPart = option
         end
@@ -366,13 +366,13 @@ local function LoadMainScript()
         end
     end)
     
-    AntiAimSection:AddDropdown("Pitch", {"Up", "Down", "Jitter", "Random"}, function(option)
+    AntiAimSection:AddDropdown("Pitch", {"Up", "Down", "Jitter", "Random"}, "Down", function(option)
         if AdvancedCheats then
             AdvancedCheats.Settings.AntiAimPitch = option
         end
     end)
     
-    AntiAimSection:AddDropdown("Yaw", {"Spin", "Backwards", "Jitter", "Random"}, function(option)
+    AntiAimSection:AddDropdown("Yaw", {"Spin", "Backwards", "Jitter", "Random"}, "Spin", function(option)
         if AdvancedCheats then
             AdvancedCheats.Settings.AntiAimYaw = option
         end
@@ -386,7 +386,7 @@ local function LoadMainScript()
         end
     end)
     
-    ResolverSection:AddDropdown("Mode", {"Basic", "Advanced"}, function(option)
+    ResolverSection:AddDropdown("Mode", {"Basic", "Advanced"}, "Basic", function(option)
         if Aimbot then
             Aimbot.Settings.ResolverMode = option
         end
@@ -442,7 +442,7 @@ local function LoadMainScript()
         end
     end)
     
-    CrosshairSection:AddDropdown("Style", {"Cross", "Circle", "Square"}, function(option)
+    CrosshairSection:AddDropdown("Style", {"Cross", "Circle", "Square"}, "Cross", function(option)
         if Crosshair then
             Crosshair.Settings.Style = option
         end
@@ -733,7 +733,7 @@ local function LoadMainScript()
         "Omega"
     }
     
-    CaseOpeningSection:AddDropdown("Open Specific Case", caseNames, function(caseName)
+    CaseOpeningSection:AddDropdown("Open Specific Case", caseNames, "Release", function(caseName)
         if SniperDuels then
             SniperDuels:OpenCase(caseName)
             if Notifications then
@@ -764,7 +764,7 @@ local function LoadMainScript()
     -- Theme Section
     local ThemeSection = ConfigTab:CreateSection("Theme")
     
-    ThemeSection:AddDropdown("Theme Preset", {"Skeet", "Aimware", "Custom"}, function(theme)
+    ThemeSection:AddDropdown("Theme Preset", {"Skeet", "Aimware", "Custom"}, "Skeet", function(theme)
         if ThemeManager then
             ThemeManager:SetTheme(theme)
         end
