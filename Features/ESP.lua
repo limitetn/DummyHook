@@ -411,6 +411,31 @@ function ESP:SetTeamCheck(value)
     self.Settings.TeamCheck = value
 end
 
+-- Setter functions for UI elements
+function ESP:SetEnabled(value)
+    self.Enabled = value
+end
+
+function ESP:SetBoxESP(value)
+    self.Settings.Boxes = value
+end
+
+function ESP:SetNameESP(value)
+    self.Settings.Names = value
+end
+
+function ESP:SetHealthESP(value)
+    self.Settings.HealthBar = value
+end
+
+function ESP:SetDistanceESP(value)
+    self.Settings.Distance = value
+end
+
+function ESP:SetWeaponESP(value)
+    self.Settings.ShowWeapon = value
+end
+
 -- Initialize ESP
 function ESP:Initialize()
     -- Set up any initial state or connections

@@ -245,6 +245,11 @@ function Library:CreateWindow(config)
         if IntroOverlay and IntroOverlay.Parent then
             IntroOverlay:Destroy()
         end
+        
+        -- Notify that intro is complete
+        if Window and Window.OnIntroComplete then
+            Window:OnIntroComplete()
+        end
     end)
     
     -- Main Frame

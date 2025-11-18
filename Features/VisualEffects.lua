@@ -290,6 +290,45 @@ function VisualEffects:SetEffectIntensity(value)
     self.Settings.EffectIntensity = value
 end
 
+-- Setter functions for UI elements
+function VisualEffects:SetChams(value)
+    self.Settings.Chams = value
+    if value then
+        self:CreateChams()
+    else
+        self:RemoveChams()
+    end
+end
+
+function VisualEffects:SetVisibleChams(value)
+    self.Settings.VisibleChams = value
+    -- Refresh chams if enabled
+    if self.Settings.Chams then
+        self:CreateChams()
+    end
+end
+
+function VisualEffects:SetOccludedChams(value)
+    self.Settings.OccludedChams = value
+    -- Refresh chams if enabled
+    if self.Settings.Chams then
+        self:CreateChams()
+    end
+end
+
+function VisualEffects:SetGlow(value)
+    self.Settings.Glow = value
+    if value then
+        self:CreateGlowEffect()
+    else
+        -- Remove glow effect
+        if self.EffectObjects.Glow then
+            self.EffectObjects.Glow:Destroy()
+            self.EffectObjects.Glow = nil
+        end
+    end
+end
+
 -- Cleanup
 function VisualEffects:Cleanup()
     for _, obj in pairs(self.EffectObjects) do

@@ -533,6 +533,56 @@ function Crosshair:Create()
     CreateCrosshair()
 end
 
+-- Setter functions for UI elements
+function Crosshair:SetEnabled(value)
+    self.Enabled = value
+    if value then
+        self:Create()
+    else
+        -- Hide crosshair
+        for _, drawing in pairs(self.Drawings) do
+            if drawing then
+                drawing.Visible = false
+            end
+        end
+    end
+end
+
+function Crosshair:SetStyle(value)
+    self.Settings.Style = value
+    if self.Enabled then
+        self:Create()
+    end
+end
+
+function Crosshair:SetSize(value)
+    self.Settings.Size = value
+    if self.Enabled then
+        self:Create()
+    end
+end
+
+function Crosshair:SetThickness(value)
+    self.Settings.Thickness = value
+    if self.Enabled then
+        self:Create()
+    end
+end
+
+function Crosshair:SetDot(value)
+    self.Settings.Dot = value
+    if self.Enabled then
+        self:Create()
+    end
+end
+
+function Crosshair:SetOutline(value)
+    self.Settings.Outline = value
+    if self.Enabled then
+        self:Create()
+    end
+end
+
 -- Initialize Crosshair
 function Crosshair:Initialize()
     -- Set up any initial state or connections

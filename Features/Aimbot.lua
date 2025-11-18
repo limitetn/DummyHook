@@ -587,6 +587,47 @@ function Aimbot:SetAimAssist(value)
     self.Settings.AimAssist = value
 end
 
+-- Setter functions for UI elements
+function Aimbot:SetEnabled(value)
+    self.Enabled = value
+end
+
+function Aimbot:SetFOV(value)
+    self.Settings.FOV = value
+end
+
+function Aimbot:SetSmoothness(value)
+    self.Settings.Smoothness = value
+end
+
+function Aimbot:SetTargetPart(value)
+    self.Settings.TargetPart = value
+end
+
+function Aimbot:SetVisibilityCheck(value)
+    self.Settings.VisibilityCheck = value
+end
+
+function Aimbot:SetTeamCheck(value)
+    self.Settings.TeamCheck = value
+end
+
+function Aimbot:SetTriggerBot(value)
+    self.Settings.TriggerBot = value
+end
+
+function Aimbot:SetTriggerDelay(value)
+    self.Settings.TriggerDelay = value
+end
+
+function Aimbot:SetResolver(value)
+    self.Settings.Resolver = value
+end
+
+function Aimbot:SetResolverMode(value)
+    self.Settings.ResolverMode = value
+end
+
 -- Initialize Aimbot
 function Aimbot:Initialize()
     -- Set up any initial state or connections

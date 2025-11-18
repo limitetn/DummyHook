@@ -502,4 +502,18 @@ function AdvancedCheats:Cleanup()
     self:SetPingSpike(false)
 end
 
+-- Setter functions for UI elements
+function AdvancedCheats:SetAntiAim(value)
+    self.Settings.AntiAim = value
+    print("[AdvancedCheats] Anti-Aim set to: " .. tostring(value))
+end
+
+function AdvancedCheats:SetAntiAimPitch(value)
+    self.Settings.AntiAimPitch = value
+end
+
+function AdvancedCheats:SetAntiAimYaw(value)
+    self.Settings.AntiAimYaw = value
+end
+
 return AdvancedCheats

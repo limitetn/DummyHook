@@ -692,6 +692,85 @@ function SniperDuels:Cleanup()
     self.Connections = {}
 end
 
+-- Setter functions for UI elements
+function SniperDuels:SetAutoOpenCases(value)
+    self.Settings.AutoOpenCases = value
+    -- Call existing function with different name to avoid recursion
+    if self.SetAutoOpenCasesFunc then
+        self:SetAutoOpenCasesFunc(value)
+    else
+        -- Fallback to direct implementation
+        if self.Connections.AutoCases then
+            self.Connections.AutoCases:Disconnect()
+            self.Connections.AutoCases = nil
+        end
+        
+        if value then
+            self.Connections.AutoCases = game:GetService("RunService").Heartbeat:Connect(function()
+                self:OpenRandomCase()
+            end)
+        end
+    end
+end
+
+function SniperDuels:SetCaseOpenSpeed(value)
+    self.Settings.CaseOpenSpeed = value
+end
+
+function SniperDuels:SetEnhancedStats(value)
+    self.Settings.EnhancedStats = value
+    -- Call existing function with different name to avoid recursion
+    if self.SetEnhancedStatsFunc then
+        self:SetEnhancedStatsFunc(value)
+    else
+        -- Fallback to direct implementation
+        print("[SniperDuels] Enhanced stats set to: " .. tostring(value))
+    end
+end
+
+function SniperDuels:SetStatBoostAmount(value)
+    self.Settings.StatBoostAmount = value
+end
+
+function SniperDuels:SetInfiniteAmmo(value)
+    self.Settings.InfiniteAmmo = value
+end
+
+function SniperDuels:SetNoRecoil(value)
+    self.Settings.NoRecoil = value
+end
+
+function SniperDuels:SetNoSpread(value)
+    self.Settings.NoSpread = value
+end
+
+function SniperDuels:SetIncreasedFireRate(value)
+    self.Settings.IncreasedFireRate = value
+end
+
+function SniperDuels:SetFireRateMultiplier(value)
+    self.Settings.FireRateMultiplier = value
+end
+
+function SniperDuels:SetMeleeExploit(value)
+    self.Settings.MeleeExploit = value
+    -- Call existing function with different name to avoid recursion
+    if self.SetMeleeExploitFunc then
+        self:SetMeleeExploitFunc(value)
+    else
+        -- Fallback to direct implementation
+        print("[SniperDuels] Melee exploit set to: " .. tostring(value))
+    end
+end
+
+function SniperDuels:SetNoMeleeCooldown(value)
+    self.Settings.NoMeleeCooldown = value
+end
+
+function SniperDuels:SetMeleeDamageBoost(value)
+    self.Settings.MeleeDamageBoost = value
+end
+
 -- Initialize
 function SniperDuels:Initialize()
     if self:IsSniperDuels() then
