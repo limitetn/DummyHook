@@ -106,64 +106,41 @@ if not modulesLoaded then
 end
 
 -- Initialize modules that need initialization
-if Notifications then
-    Notifications:Initialize()
+-- Only call Initialize if the module exists and has an Initialize method
+local function safeInitialize(module)
+    if module and type(module) == "table" and module.Initialize and type(module.Initialize) == "function" then
+        local success, err = pcall(function()
+            module:Initialize()
+        end)
+        if not success then
+            warn("[DummyHook] Failed to initialize module: " .. tostring(err))
+        end
+    end
 end
 
-if KeyManager then
-    KeyManager:Initialize()
+safeInitialize(Notifications)
+safeInitialize(KeyManager)
+safeInitialize(GameExploits)
+safeInitialize(ConfigManager)
+safeInitialize(SniperDuels)
+
+-- Initialize modules that have local Initialize functions
+if Aimbot and type(Aimbot) == "table" and Aimbot.Initialize and type(Aimbot.Initialize) == "function" then
+    Aimbot.Initialize()
 end
 
-if Aimbot then
-    Aimbot:Initialize()
+if ESP and type(ESP) == "table" and ESP.Initialize and type(ESP.Initialize) == "function" then
+    ESP.Initialize()
 end
 
-if ESP then
-    ESP:Initialize()
+if Crosshair and type(Crosshair) == "table" and Crosshair.Initialize and type(Crosshair.Initialize) == "function" then
+    Crosshair.Initialize()
 end
 
-if Crosshair then
-    Crosshair:Initialize()
-end
-
-if Misc then
-    Misc:Initialize()
-end
-
-if PlayerManager then
-    PlayerManager:Initialize()
-end
-
-if ThemeManager then
-    ThemeManager:Initialize(Window)
-end
-
-if VisualEffects then
-    VisualEffects:Initialize()
-end
-
-if AdvancedCheats then
-    AdvancedCheats:Initialize()
-end
-
-if GameExploits then
-    GameExploits:Initialize()
-end
-
-if CharCustomizer then
-    CharCustomizer:Initialize()
-end
-
-if SkinCustomizer then
-    SkinCustomizer:Initialize()
-end
-
-if ConfigManager then
-    ConfigManager:Initialize()
-end
-
-if SniperDuels then
-    SniperDuels:Initialize()
+if ThemeManager and type(ThemeManager) == "table" then
+    if ThemeManager.Initialize and type(ThemeManager.Initialize) == "function" then
+        ThemeManager:Initialize(Window)
+    end
 end
 
 -- Create Sniper Duels Tab
