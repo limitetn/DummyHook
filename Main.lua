@@ -279,6 +279,7 @@ local function LoadMainScript()
     safeInitialize(GameExploits)
     safeInitialize(ConfigManager)
     safeInitialize(SniperDuels)
+    safeInitialize(GameModules)
     safeInitialize(ThemeManager)
     safeInitialize(PlayerManager)
     safeInitialize(AdvancedCheats)
@@ -1351,6 +1352,238 @@ local function LoadMainScript()
         end
     end)
     
+    -- New Advanced Features Section
+    local AdvancedFeaturesSection = SniperDuelsTab:CreateSection("Advanced Features")
+    
+    -- Movement Hacks
+    AdvancedFeaturesSection:AddToggle("Speed Hack", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.SpeedHack = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Speed hack " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AdvancedFeaturesSection:AddSlider("Speed Multiplier", 2, 1, 5, 0.1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.SpeedMultiplier = value
+        end
+    end)
+    
+    AdvancedFeaturesSection:AddToggle("Jump Power Hack", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.JumpPowerHack = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Jump power hack " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AdvancedFeaturesSection:AddSlider("Jump Power Multiplier", 2, 1, 5, 0.1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.JumpPowerMultiplier = value
+        end
+    end)
+    
+    -- Combat Hacks
+    AdvancedFeaturesSection:AddToggle("Trigger Bot", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.TriggerBot = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Trigger bot " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AdvancedFeaturesSection:AddSlider("Trigger Bot Delay (s)", 0.1, 0.01, 1, 0.01, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.TriggerBotDelay = value
+        end
+    end)
+    
+    -- Anti-Aim Features
+    AdvancedFeaturesSection:AddToggle("Spin Bot", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.SpinBot = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Spin bot " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AdvancedFeaturesSection:AddSlider("Spin Speed", 10, 1, 50, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.SpinSpeed = value
+        end
+    end)
+    
+    -- Utility Features
+    AdvancedFeaturesSection:AddToggle("Auto Reload", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoReload = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Auto reload " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AdvancedFeaturesSection:AddToggle("No Fall Damage", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.NoFallDamage = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "No fall damage " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    -- Skin Management Section
+    local SkinManagementSection = SniperDuelsTab:CreateSection("Skin Management")
+    
+    SkinManagementSection:AddToggle("Auto Pickup Skins", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoPickupSkins = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Auto pickup skins " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    SkinManagementSection:AddToggle("Skin Collector", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.SkinCollector = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Skin collector " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    SkinManagementSection:AddSlider("Skin Collector Delay (s)", 0.5, 0.1, 5, 0.1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.SkinCollectorDelay = value
+        end
+    end)
+    
+    SkinManagementSection:AddToggle("Auto Sell Common Skins", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoSellCommonSkins = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Auto sell common skins " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    SkinManagementSection:AddSlider("Sell Rarity Threshold", 3, 1, 5, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.AutoSellRarityThreshold = value
+        end
+    end)
+    
+    SkinManagementSection:AddToggle("Auto Upgrade Skins", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoUpgradeSkins = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Auto upgrade skins " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    SkinManagementSection:AddSlider("Upgrade Rarity Threshold", 4, 1, 5, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.UpgradeRarityThreshold = value
+        end
+    end)
+    
+    SkinManagementSection:AddToggle("Auto Equip Best Skins", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoEquipBestSkins = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Auto equip best skins " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    SkinManagementSection:AddSlider("Equip Interval (s)", 10, 1, 60, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.SkinEquipInterval = value
+        end
+    end)
+    
+    -- Game Enhancement Section
+    local GameEnhancementSection = SniperDuelsTab:CreateSection("Game Enhancement")
+    
+    GameEnhancementSection:AddToggle("Killstreak Notifier", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.KillstreakNotifier = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Killstreak notifier " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameEnhancementSection:AddToggle("Achievement Unlocker", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AchievementUnlocker = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Achievement unlocker " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameEnhancementSection:AddToggle("Unlock All Achievements", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.UnlockAllAchievements = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Unlock all achievements " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameEnhancementSection:AddToggle("XP Multiplier", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.XPMultiplier = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "XP multiplier " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameEnhancementSection:AddSlider("XP Multiplier Amount", 2, 1, 10, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.XPMultiplierAmount = value
+        end
+    end)
+    
+    GameEnhancementSection:AddToggle("Coin Multiplier", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.CoinMultiplier = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Coin multiplier " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameEnhancementSection:AddSlider("Coin Multiplier Amount", 2, 1, 10, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.CoinMultiplierAmount = value
+        end
+    end)
+    
+    GameEnhancementSection:AddToggle("Premium Currency Multiplier", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.PremiumCurrencyMultiplier = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Premium currency multiplier " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameEnhancementSection:AddSlider("Premium Multiplier Amount", 2, 1, 10, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.PremiumCurrencyMultiplierAmount = value
+        end
+    end)
+    
     -- Advanced Tab
     local AdvancedTab = Window:CreateTab("Advanced")
     print("[DummyHook] Created Advanced tab")
@@ -1539,3 +1772,60 @@ end
 spawn(function()
     CreateKeyUI(LoadMainScript)
 end)
+
+-- Load features
+print("[DummyHook] Loading features...")
+local loaded, Aimbot = pcall(loadstring, get_raw_content(GITHUB_RAW_URL .. "/Features/Aimbot.lua"))
+if loaded and Aimbot then
+    Aimbot = Aimbot()
+    print("[DummyHook] Aimbot module loaded successfully")
+else
+    print("[DummyHook] Failed to load Aimbot module")
+    Aimbot = nil
+end
+
+local loaded, ESP = pcall(loadstring, get_raw_content(GITHUB_RAW_URL .. "/Features/ESP.lua"))
+if loaded and ESP then
+    ESP = ESP()
+    print("[DummyHook] ESP module loaded successfully")
+else
+    print("[DummyHook] Failed to load ESP module")
+    ESP = nil
+end
+
+local loaded, Crosshair = pcall(loadstring, get_raw_content(GITHUB_RAW_URL .. "/Features/Crosshair.lua"))
+if loaded and Crosshair then
+    Crosshair = Crosshair()
+    print("[DummyHook] Crosshair module loaded successfully")
+else
+    print("[DummyHook] Failed to load Crosshair module")
+    Crosshair = nil
+end
+
+local loaded, SniperDuels = pcall(loadstring, get_raw_content(GITHUB_RAW_URL .. "/Features/SniperDuels.lua"))
+if loaded and SniperDuels then
+    SniperDuels = SniperDuels()
+    print("[DummyHook] SniperDuels module loaded successfully")
+else
+    print("[DummyHook] Failed to load SniperDuels module")
+    SniperDuels = nil
+end
+
+-- Load new GameModules
+local loaded, GameModules = pcall(loadstring, get_raw_content(GITHUB_RAW_URL .. "/Features/GameModules.lua"))
+if loaded and GameModules then
+    GameModules = GameModules()
+    print("[DummyHook] GameModules module loaded successfully")
+else
+    print("[DummyHook] Failed to load GameModules module")
+    GameModules = nil
+end
+
+local loaded, VisualEffects = pcall(loadstring, get_raw_content(GITHUB_RAW_URL .. "/Features/VisualEffects.lua"))
+if loaded and VisualEffects then
+    VisualEffects = VisualEffects()
+    print("[DummyHook] VisualEffects module loaded successfully")
+else
+    print("[DummyHook] Failed to load VisualEffects module")
+    VisualEffects = nil
+end

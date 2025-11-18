@@ -31,6 +31,43 @@ local SniperDuels = {
         MeleeDamageBoost = false,
         AutoFarm = false,
         FarmMethod = "Kills",
+        FarmInterval = 1,
+        OneShotKill = false,
+        InstantKillMelee = false,
+        AutoRespawn = false,
+        GodMode = false,
+        SpeedHack = false,
+        SpeedMultiplier = 2,
+        JumpPowerHack = false,
+        JumpPowerMultiplier = 2,
+        AntiAim = false,
+        SpinBot = false,
+        SpinSpeed = 10,
+        TriggerBot = false,
+        TriggerBotDelay = 0.1,
+        AutoReload = false,
+        NoFallDamage = false,
+        Wallhack = false,
+        Radar = false,
+        SpectatorNotifier = false,
+        AutoPickupSkins = false,
+        SkinCollector = false,
+        SkinCollectorDelay = 0.5,
+        AutoSellCommonSkins = false,
+        AutoSellRarityThreshold = 3, -- Only sell skins with rarity 3 or lower
+        AutoUpgradeSkins = false,
+        UpgradeRarityThreshold = 4, -- Only upgrade skins with rarity 4 or higher
+        AutoEquipBestSkins = false,
+        SkinEquipInterval = 10,
+        KillstreakNotifier = false,
+        AchievementUnlocker = false,
+        UnlockAllAchievements = false,
+        XPMultiplier = false,
+        XPMultiplierAmount = 2,
+        CoinMultiplier = false,
+        CoinMultiplierAmount = 2,
+        PremiumCurrencyMultiplier = false,
+        PremiumCurrencyMultiplierAmount = 2,
     },
     Connections = {},
     DetectedSkins = {},
@@ -40,6 +77,10 @@ local SniperDuels = {
     },
     WeaponConfigs = {},
     MeleeConfigs = {},
+    KillMethods = {
+        "Kills", "Headshots", "Noscopes", "Quickscopes", 
+        "Jumpshots", "KnifeThrow", "Ricochet", "Knife"
+    }
 }
 
 -- Detect if we're in Sniper Duels
@@ -599,6 +640,44 @@ function SniperDuels:AutoFarm()
     end)
 end
 
+-- Teleport to lobby
+function SniperDuels:TeleportToLobby()
+    pcall(function()
+        local remotes = ReplicatedStorage:GetDescendants()
+        
+        for _, remote in pairs(remotes) do
+            if remote:IsA("RemoteEvent") then
+                local remoteName = remote.Name:lower()
+                if remoteName:find("teleport") or remoteName:find("lobby") or 
+                   remoteName:find("spawn") or remoteName:find("location") then
+                    remote:FireServer("lobby")
+                    remote:FireServer("teleport", "lobby")
+                    remote:FireServer("goto", "lobby")
+                end
+            end
+        end
+    end)
+end
+
+-- Teleport to spawn
+function SniperDuels:TeleportToSpawn()
+    pcall(function()
+        local remotes = ReplicatedStorage:GetDescendants()
+        
+        for _, remote in pairs(remotes) do
+            if remote:IsA("RemoteEvent") then
+                local remoteName = remote.Name:lower()
+                if remoteName:find("teleport") or remoteName:find("spawn") or 
+                   remoteName:find("location") then
+                    remote:FireServer("spawn")
+                    remote:FireServer("teleport", "spawn")
+                    remote:FireServer("goto", "spawn")
+                end
+            end
+        end
+    end)
+end
+
 -- Skin Detection System based on actual CaseConfigs.lua module
 function SniperDuels:StartSkinDetection()
     self.DetectedSkins = {}
@@ -793,6 +872,176 @@ end
 
 function SniperDuels:SetSkinDupeAmount(value)
     self.Settings.SkinDupeAmount = value
+end
+
+-- New setter functions for additional features
+function SniperDuels:SetSpeedHack(value)
+    self.Settings.SpeedHack = value
+    if GameModules then
+        GameModules:SetSpeedHack(value)
+    end
+end
+
+function SniperDuels:SetSpeedMultiplier(value)
+    self.Settings.SpeedMultiplier = value
+    if GameModules then
+        GameModules.Settings.SpeedMultiplier = value
+    end
+end
+
+function SniperDuels:SetJumpPowerHack(value)
+    self.Settings.JumpPowerHack = value
+    if GameModules then
+        GameModules:SetJumpPowerHack(value)
+    end
+end
+
+function SniperDuels:SetJumpPowerMultiplier(value)
+    self.Settings.JumpPowerMultiplier = value
+    if GameModules then
+        GameModules.Settings.JumpPowerMultiplier = value
+    end
+end
+
+function SniperDuels:SetSpinBot(value)
+    self.Settings.SpinBot = value
+    if GameModules then
+        GameModules:SetSpinBot(value)
+    end
+end
+
+function SniperDuels:SetSpinSpeed(value)
+    self.Settings.SpinSpeed = value
+    if GameModules then
+        GameModules.Settings.SpinSpeed = value
+    end
+end
+
+function SniperDuels:SetTriggerBot(value)
+    self.Settings.TriggerBot = value
+    if GameModules then
+        GameModules:SetTriggerBot(value)
+    end
+end
+
+function SniperDuels:SetTriggerBotDelay(value)
+    self.Settings.TriggerBotDelay = value
+    if GameModules then
+        GameModules.Settings.TriggerBotDelay = value
+    end
+end
+
+function SniperDuels:SetAutoReload(value)
+    self.Settings.AutoReload = value
+end
+
+function SniperDuels:SetNoFallDamage(value)
+    self.Settings.NoFallDamage = value
+end
+
+function SniperDuels:SetAutoPickupSkins(value)
+    self.Settings.AutoPickupSkins = value
+    if GameModules then
+        GameModules:SetAutoPickupSkins(value)
+    end
+end
+
+function SniperDuels:SetSkinCollector(value)
+    self.Settings.SkinCollector = value
+    if GameModules then
+        GameModules:SetSkinCollector(value)
+    end
+end
+
+function SniperDuels:SetSkinCollectorDelay(value)
+    self.Settings.SkinCollectorDelay = value
+    if GameModules then
+        GameModules.Settings.SkinCollectorDelay = value
+    end
+end
+
+function SniperDuels:SetAutoSellCommonSkins(value)
+    self.Settings.AutoSellCommonSkins = value
+end
+
+function SniperDuels:SetAutoSellRarityThreshold(value)
+    self.Settings.AutoSellRarityThreshold = value
+end
+
+function SniperDuels:SetAutoUpgradeSkins(value)
+    self.Settings.AutoUpgradeSkins = value
+end
+
+function SniperDuels:SetUpgradeRarityThreshold(value)
+    self.Settings.UpgradeRarityThreshold = value
+end
+
+function SniperDuels:SetAutoEquipBestSkins(value)
+    self.Settings.AutoEquipBestSkins = value
+    if GameModules then
+        GameModules:SetAutoEquipBestSkins(value)
+    end
+end
+
+function SniperDuels:SetSkinEquipInterval(value)
+    self.Settings.SkinEquipInterval = value
+    if GameModules then
+        GameModules.Settings.SkinEquipInterval = value
+    end
+end
+
+function SniperDuels:SetKillstreakNotifier(value)
+    self.Settings.KillstreakNotifier = value
+end
+
+function SniperDuels:SetAchievementUnlocker(value)
+    self.Settings.AchievementUnlocker = value
+end
+
+function SniperDuels:SetUnlockAllAchievements(value)
+    self.Settings.UnlockAllAchievements = value
+end
+
+function SniperDuels:SetXPMultiplier(value)
+    self.Settings.XPMultiplier = value
+    if GameModules then
+        GameModules:SetXPMultiplier(value)
+    end
+end
+
+function SniperDuels:SetXPMultiplierAmount(value)
+    self.Settings.XPMultiplierAmount = value
+    if GameModules then
+        GameModules.Settings.XPMultiplierAmount = value
+    end
+end
+
+function SniperDuels:SetCoinMultiplier(value)
+    self.Settings.CoinMultiplier = value
+    if GameModules then
+        GameModules:SetCoinMultiplier(value)
+    end
+end
+
+function SniperDuels:SetCoinMultiplierAmount(value)
+    self.Settings.CoinMultiplierAmount = value
+    if GameModules then
+        GameModules.Settings.CoinMultiplierAmount = value
+    end
+end
+
+function SniperDuels:SetPremiumCurrencyMultiplier(value)
+    self.Settings.PremiumCurrencyMultiplier = value
+    if GameModules then
+        GameModules:SetPremiumCurrencyMultiplier(value)
+    end
+end
+
+function SniperDuels:SetPremiumCurrencyMultiplierAmount(value)
+    self.Settings.PremiumCurrencyMultiplierAmount = value
+    if GameModules then
+        GameModules.Settings.PremiumCurrencyMultiplierAmount = value
+    end
 end
 
 -- Initialize
