@@ -299,9 +299,12 @@ local function LoadMainScript()
         end
     end
 
-    -- Create Tabs
+    -- Create Tabs with debugging
+    print("[DummyHook] Creating tabs...")
+    
     -- Rage Tab
     local RageTab = Window:CreateTab("Rage")
+    print("[DummyHook] Created Rage tab")
     
     -- Aimbot Section
     local AimbotSection = RageTab:CreateSection("Aimbot")
@@ -311,7 +314,7 @@ local function LoadMainScript()
         end
     end)
     
-    AimbotSection:AddSlider("FOV", 50, 10, 500, 1, function(value)
+    AimbotSection:AddSlider("FOV", 150, 10, 500, 1, function(value)
         if Aimbot then
             Aimbot.Settings.FOV = value
         end
@@ -391,6 +394,7 @@ local function LoadMainScript()
     
     -- Visuals Tab
     local VisualsTab = Window:CreateTab("Visuals")
+    print("[DummyHook] Created Visuals tab")
     
     -- ESP Section
     local ESPSection = VisualsTab:CreateSection("ESP")
@@ -504,6 +508,7 @@ local function LoadMainScript()
     
     -- Misc Tab
     local MiscTab = Window:CreateTab("Misc")
+    print("[DummyHook] Created Misc tab")
     
     -- Movement Section
     local MovementSection = MiscTab:CreateSection("Movement")
@@ -593,6 +598,7 @@ local function LoadMainScript()
     
     -- Exploits Tab
     local ExploitsTab = Window:CreateTab("Exploits")
+    print("[DummyHook] Created Exploits tab")
     
     -- Game Exploits Section
     local GameExploitsSection = ExploitsTab:CreateSection("Game Exploits")
@@ -674,6 +680,7 @@ local function LoadMainScript()
     
     -- Sniper Duels Tab
     local SniperDuelsTab = Window:CreateTab("Sniper Duels")
+    print("[DummyHook] Created Sniper Duels tab")
     
     -- Create specialized section for Sniper Duels
     local SniperDuelsSpecializedSection = SniperDuelsTab:CreateSection("Sniper Duels Specialized")
@@ -737,6 +744,7 @@ local function LoadMainScript()
     
     -- Config Tab
     local ConfigTab = Window:CreateTab("Config")
+    print("[DummyHook] Created Config tab")
     
     -- Settings Section
     local SettingsSection = ConfigTab:CreateSection("Settings")
@@ -807,7 +815,7 @@ local function LoadMainScript()
     
     -- Final initialization
     print("[DummyHook] Main script loaded successfully!")
-    print("[DummyHook] Press RightShift to open the menu.")
+    print("[DummyHook] All tabs created. Press RightShift to open the menu.")
     
     if Notifications then
         Notifications:Success("DummyHook", "Loaded successfully! Press RightShift to open.", 5)
