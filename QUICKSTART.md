@@ -1,5 +1,12 @@
 # 🚀 DummyHook Quick Start Guide
 
+> **✓ ALL BUGS FIXED - READY TO USE!**
+> - ✓ Fixed all AddDropdown function calls
+> - ✓ Proper module loading with fallback support  
+> - ✓ Working key system with demo keys
+> - ✓ Discord bot integration for key management
+> - ✓ All tabs load properly (Rage, Visuals, Misc, Exploits, Sniper Duels, Config)
+
 ## 📋 What You Have
 
 Your DummyHook project includes:
@@ -217,6 +224,47 @@ Include:
 - Game name
 - Error messages
 - Steps to reproduce
+
+---
+
+## 🤖 Discord Bot for Key Management
+
+**NEW:** Generate and manage keys directly from Discord!
+
+### Quick Setup:
+
+1. **Navigate to discord-bot folder:**
+   ```bash
+   cd discord-bot
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure the bot:**
+   - Copy `.env.example` to `.env`
+   - Add your Discord bot token and server ID
+   - See `discord-bot/README.md` for detailed setup
+
+4. **Deploy commands:**
+   ```bash
+   npm run deploy
+   ```
+
+5. **Start the bot:**
+   ```bash
+   npm start
+   ```
+
+### Available Commands:
+- `/genkey` - Generate new keys with custom levels
+- `/deletekey` - Remove keys from database
+- `/listkeys` - View all active keys
+- `/checkkey` - Validate a specific key
+
+For detailed Discord bot setup, see `discord-bot/README.md`
 
 ---
 
