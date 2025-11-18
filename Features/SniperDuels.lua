@@ -1,8 +1,17 @@
+--!strict
 --[[
     DummyHook Sniper Duels Module
     Specialized features for Sniper Duels game
+    Refactored for Luau with modern syntax
 ]]
 
+-- Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Module
 local SniperDuels = {
     Enabled = false,
     Settings = {
@@ -11,7 +20,7 @@ local SniperDuels = {
         AutoDupeSkins = false,
         SkinDupeAmount = 1,
         EnhancedStats = false,
-        StatBoostAmount = 2,        -- Realistic 2x boost instead of 100x
+        StatBoostAmount = 2,
         InfiniteAmmo = false,
         NoRecoil = false,
         NoSpread = false,
@@ -21,43 +30,45 @@ local SniperDuels = {
         NoMeleeCooldown = false,
         MeleeDamageBoost = false,
         AutoFarm = false,
-        FarmMethod = "Kills"
+        FarmMethod = "Kills",
     },
     Connections = {},
     DetectedSkins = {},
-    -- Actual case types from CaseConfigs.lua game module
     CaseTypes = {
-        "Release",          -- RELEASE CASE from game module
-        "Halloween2025"     -- HALLOWS BASKET from game module
+        "Release",
+        "Halloween2025",
     },
-    -- Actual weapon config references from game modules
     WeaponConfigs = {},
-    MeleeConfigs = {}
+    MeleeConfigs = {},
 }
-
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
 
 -- Detect if we're in Sniper Duels
 function SniperDuels:IsSniperDuels()
     local gameId = game.PlaceId
-    if gameId == 109397169461300 then -- Correct Sniper Duels PlaceId
+    if gameId == 109397169461300 then
         return true
     end
     
     -- Fallback to name detection
-    local gameName = game:GetService("MarketplaceService"):GetProductInfo(gameId).Name:lower()
-    return gameName:find("sniper") and gameName:find("duels")
+    local success, productInfo = pcall(function()
+        return game:GetService("MarketplaceService"):GetProductInfo(gameId)
+    end)
+    
+    if success and productInfo then
+        local gameName = string.lower(productInfo.Name)
+        return string.find(gameName, "sniper") ~= nil and string.find(gameName, "duels") ~= nil
+    end
+    
+    return false
 end
 
 -- Auto Case Opening
 function SniperDuels:SetAutoOpenCases(enabled)
     self.Settings.AutoOpenCases = enabled
     
-    if self.Connections.AutoCases then
-        self.Connections.AutoCases:Disconnect()
+    local connection = self.Connections.AutoCases
+    if connection then
+        connection:Disconnect()
         self.Connections.AutoCases = nil
     end
     
@@ -70,18 +81,21 @@ end
 
 -- Open a random case
 function SniperDuels:OpenRandomCase()
-    if not self.Settings.AutoOpenCases then return end
+    if not self.Settings.AutoOpenCases then 
+        return 
+    end
     
-    local caseType = self.CaseTypes[math.random(1, #self.CaseTypes)]
+    local caseIndex = math.random(1, #self.CaseTypes)
+    local caseType = self.CaseTypes[caseIndex]
     self:OpenCase(caseType)
     
     -- Wait based on speed setting
-    wait(1 / self.Settings.CaseOpenSpeed)
+    task.wait(1 / self.Settings.CaseOpenSpeed)
 end
 
 -- Open specific case
 function SniperDuels:OpenCase(caseType)
-    pcall(function()
+    task.spawn(function()
         local remotes = ReplicatedStorage:GetDescendants()
         
         -- Sniper Duels specific case opening methods based on actual game modules
@@ -204,7 +218,7 @@ function SniperDuels:DupeSkin(skinName, amount)
                             remote:InvokeServer("give", skinName, 1)
                             remote:InvokeServer("unlock", skinName, 1)
                         end
-                        wait(0.05) -- Faster duplication
+                        task.wait(0.05) -- Faster duplication
                     end
                 end
             end
