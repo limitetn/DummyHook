@@ -1,3 +1,10 @@
+    -- Create Sniper Duels Tab
+    local SniperDuelsTab = Window:CreateTab("Sniper Duels")
+    
+    -- Create specialized section for Sniper Duels
+    local SniperDuelsSpecializedSection = SniperDuelsTab:CreateSection("Sniper Duels Specialized")
+    
+    -- Add Sniper Duels specific buttons
     SniperDuelsSpecializedSection:AddButton("Dupe All Skins (x1)", function()
         if SniperDuels then
             local skins = SniperDuels:GetDetectedSkins()
@@ -18,7 +25,7 @@
     end)
 
     -- Case Opening Section
-    local CaseOpeningSection = SniperDuelsTab:AddSection("Case Opening")
+    local CaseOpeningSection = SniperDuelsTab:CreateSection("Case Opening")
     CaseOpeningSection:AddToggle("Auto Open Cases", false, function(state)
         if SniperDuels then
             SniperDuels.Settings.AutoOpenCases = state
