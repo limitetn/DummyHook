@@ -40,7 +40,7 @@ print("[DummyHook] Starting loader...")
 print("[DummyHook] For best experience, host files on GitHub and use the main loader")
 
 -- Load main script
-local mainUrl = "https://raw.githubusercontent.com/YourUsername/DummyHook/main/Main.lua"
+local mainUrl = "https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua"
 local mainPath = "Main.lua"
 
 local success, err = pcall(function()

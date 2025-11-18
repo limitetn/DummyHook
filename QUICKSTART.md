@@ -42,8 +42,8 @@ DummyHook/
 
 #### Step 2: Update URLs
 In `Main.lua`, replace `YourUsername` with your GitHub username:
-```lua
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUsername/DummyHook/main/UI/Library.lua"))()
+```
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/limitetn/DummyHook/main/UI/Library.lua"))()
 ```
 
 Do this for all 4 module loads in `Main.lua`.
@@ -52,7 +52,7 @@ Do this for all 4 module loads in `Main.lua`.
 1. Go to your GitHub repo
 2. Click on `Main.lua`
 3. Click "Raw" button
-4. Copy the URL (should look like: `https://raw.githubusercontent.com/YourUsername/DummyHook/main/Main.lua`)
+4. Copy the URL (should look like: `https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua`)
 
 #### Step 4: Execute
 In your Roblox executor:
@@ -74,10 +74,7 @@ local KeySystem = {
     Key = "YOUR-CUSTOM-KEY-HERE",
     KeyURL = "https://your-key-site.com",
     Discord = "discord.gg/yourserver"
-}
-```
-
----
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/limitetn/DummyHook/main/UI/Library.lua"))()
 
 ## 🎮 Features Overview
 

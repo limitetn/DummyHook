@@ -61,7 +61,7 @@ A premium universal Roblox script featuring an advanced Aimbot, ESP, Crosshair, 
 
 ### Method 1: Direct Load (Recommended)
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUsername/DummyHook/main/Main.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua"))()
 ```
 
 ### Method 2: Manual Load
@@ -144,12 +144,12 @@ Movement and utility features:
 
 ### Key System Configuration
 Edit `Main.lua` to customize:
-```lua
+```
 local KeySystem = {
-    Enabled = true,  -- Set to false to disable key system
-    Key = "DUMMYHOOK-PREMIUM-2025",  -- Your custom key
-    KeyURL = "https://dummyhook.io/getkey",  -- Your key distribution link
-    Discord = "discord.gg/dummyhook"  -- Your Discord server
+    Enabled = true,  // Set to false to disable key system
+    Key = "DUMMYHOOK-PREMIUM-2025",  // Your custom key
+    KeyURL = "https://dummyhook.io/getkey",  // Your key distribution link
+    Discord = "discord.gg/dummyhook"  // Your Discord server
 }
 ```
 

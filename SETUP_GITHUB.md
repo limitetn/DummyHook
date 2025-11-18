@@ -55,7 +55,7 @@ This guide will help you set up DummyHook on GitHub so users can load it via loa
 2. Click **"Raw"** button
 3. Copy the URL (example):
    ```
-   https://raw.githubusercontent.com/YourUsername/DummyHook/main/Main.lua
+   https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua
    ```
 
 4. Repeat for all module files:
@@ -71,7 +71,7 @@ This guide will help you set up DummyHook on GitHub so users can load it via loa
 2. Click the **pencil icon** (Edit)
 3. Find this section (around line 230):
    ```lua
-   local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUsername/DummyHook/main/UI/Library.lua"))()
+   local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/limitetn/DummyHook/main/UI/Library.lua"))()
    ```
 
 4. Replace **"YourUsername"** with your actual GitHub username
@@ -112,7 +112,7 @@ git commit -m "Initial commit - DummyHook v1.0.0"
 ### Step 2: Connect to GitHub
 
 ```bash
-git remote add origin https://github.com/YourUsername/DummyHook.git
+git remote add origin https://github.com/limitetn/DummyHook.git
 git branch -M main
 git push -u origin main
 ```
@@ -177,7 +177,7 @@ end
 Once uploaded, share this with users:
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUsername/DummyHook/main/Main.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua"))()
 ```
 
 ### Create a Short Link (Optional)
@@ -330,7 +330,7 @@ After setup, verify:
 
 Your GitHub repo should look like:
 ```
-YourUsername/DummyHook/
+limitetn/DummyHook/
 ├── .gitignore
 ├── LICENSE (optional)
 ├── README.md

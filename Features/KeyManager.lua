@@ -13,7 +13,7 @@ KeyManager.Discord = "discord.gg/dummyhook"
 -- Load keys from the keylist file
 function KeyManager:LoadKeys()
     local success, result = pcall(function()
-        local keysJSON = HttpService:GetAsync("https://raw.githubusercontent.com/etnson9/DummyHook/main/Keys/keylist.json")
+        local keysJSON = HttpService:GetAsync("https://raw.githubusercontent.com/limitetn/DummyHook/main/Keys/keylist.json")
         local keysTable = HttpService:JSONDecode(keysJSON)
         if type(keysTable) == "table" then
             self.Keys = keysTable

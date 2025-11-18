@@ -120,7 +120,7 @@ DummyHook/
 
 3. **Share with users:**
    ```lua
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUsername/DummyHook/main/Main.lua"))()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua"))()
    ```
 
 ---
