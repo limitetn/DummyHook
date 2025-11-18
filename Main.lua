@@ -576,7 +576,7 @@ local function LoadMainScript()
         end
     end)
     
-    SpinBotSection:AddDropdown("Spin Mode", {"Horizontal", "Vertical", "Random", "Jitter"}, function(option)
+    SpinBotSection:AddDropdown("Spin Mode", {"Horizontal", "Vertical", "Random", "Jitter"}, "Horizontal", function(option)
         if Misc then
             Misc.Settings.SpinMode = option
         end

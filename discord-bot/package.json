@@ -1,0 +1,21 @@
+{
+  "name": "dummyhook-discord-bot",
+  "version": "1.0.0",
+  "description": "Discord bot for DummyHook key generation and management",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "deploy": "node deploy-commands.js",
+    "dev": "nodemon bot.js"
+  },
+  "keywords": ["discord", "bot", "key-system"],
+  "author": "DummyHook",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
