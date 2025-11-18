@@ -724,13 +724,10 @@ local function LoadMainScript()
         end
     end)
     
-    -- Updated case names to match Sniper Duels actual case identifiers
+    -- Updated case names to match actual CaseConfigs.lua module
     local caseNames = {
-        "Release",           -- Release Case
-        "Halloween2025",     -- Hallows Basket
-        "Beta",
-        "Alpha", 
-        "Omega"
+        "Release",           -- RELEASE CASE from CaseConfigs.lua
+        "Halloween2025"      -- HALLOWS BASKET from CaseConfigs.lua
     }
     
     CaseOpeningSection:AddDropdown("Open Specific Case", caseNames, "Release", function(caseName)
@@ -739,6 +736,78 @@ local function LoadMainScript()
             if Notifications then
                 Notifications:Success("Sniper Duels", "Opening " .. caseName .. " case!", 3)
             end
+        end
+    end)
+    
+    -- Weapon Enhancements Section (based on Gun.lua module)
+    local WeaponSection = SniperDuelsTab:CreateSection("Weapon Enhancements")
+    
+    WeaponSection:AddToggle("Enhanced Stats", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.EnhancedStats = state
+            SniperDuels:SetEnhancedStats(state)
+        end
+    end)
+    
+    WeaponSection:AddSlider("Stat Boost Amount", 2, 1, 5, 0.5, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.StatBoostAmount = value
+        end
+    end)
+    
+    WeaponSection:AddToggle("Infinite Ammo", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.InfiniteAmmo = state
+            SniperDuels:SetEnhancedStats(SniperDuels.Settings.EnhancedStats)
+        end
+    end)
+    
+    WeaponSection:AddToggle("No Recoil", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.NoRecoil = state
+            SniperDuels:SetEnhancedStats(SniperDuels.Settings.EnhancedStats)
+        end
+    end)
+    
+    WeaponSection:AddToggle("No Spread", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.NoSpread = state
+            SniperDuels:SetEnhancedStats(SniperDuels.Settings.EnhancedStats)
+        end
+    end)
+    
+    WeaponSection:AddToggle("Increased Fire Rate", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.IncreasedFireRate = state
+            SniperDuels:SetEnhancedStats(SniperDuels.Settings.EnhancedStats)
+        end
+    end)
+    
+    WeaponSection:AddSlider("Fire Rate Multiplier", 1.5, 1, 3, 0.1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.FireRateMultiplier = value
+        end
+    end)
+    
+    -- Melee Section (based on Melee.lua module)
+    local MeleeSection = SniperDuelsTab:CreateSection("Melee (Bayonet)")
+    
+    MeleeSection:AddToggle("Melee Exploit", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.MeleeExploit = state
+            SniperDuels:SetMeleeExploit(state)
+        end
+    end)
+    
+    MeleeSection:AddToggle("No Cooldown", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.NoMeleeCooldown = state
+        end
+    end)
+    
+    MeleeSection:AddToggle("Damage Boost (3x)", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.MeleeDamageBoost = state
         end
     end)
     
