@@ -628,6 +628,66 @@ function Aimbot:SetResolverMode(value)
     self.Settings.ResolverMode = value
 end
 
+function Aimbot:SetSilentAim(value)
+    self.Settings.SilentAim = value
+end
+
+function Aimbot:SetAutoShoot(value)
+    self.Settings.AutoShoot = value
+end
+
+function Aimbot:SetAimLock(value)
+    self.Settings.AimLock = value
+end
+
+function Aimbot:SetAimLockDuration(value)
+    self.Settings.AimLockDuration = value
+end
+
+function Aimbot:SetPredictMovement(value)
+    self.Settings.PredictMovement = value
+end
+
+function Aimbot:SetPredictionAmount(value)
+    self.Settings.PredictionAmount = value
+end
+
+function Aimbot:SetHitChance(value)
+    self.Settings.HitChance = value
+end
+
+function Aimbot:SetHitChancePercent(value)
+    self.Settings.HitChancePercent = value
+end
+
+function Aimbot:SetBurstFire(value)
+    self.Settings.BurstFire = value
+end
+
+function Aimbot:SetBurstShots(value)
+    self.Settings.BurstShots = value
+end
+
+function Aimbot:SetBurstDelay(value)
+    self.Settings.BurstDelay = value
+end
+
+function Aimbot:SetAdaptiveResolver(value)
+    self.Settings.AdaptiveResolver = value
+end
+
+function Aimbot:SetBruteForce(value)
+    self.Settings.BruteForce = value
+end
+
+function Aimbot:SetBruteForceAttempts(value)
+    self.Settings.BruteForceAttempts = value
+end
+
+function Aimbot:SetLogResolverData(value)
+    self.Settings.LogResolverData = value
+end
+
 -- Initialize Aimbot
 function Aimbot:Initialize()
     -- Set up any initial state or connections

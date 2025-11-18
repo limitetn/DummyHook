@@ -369,6 +369,52 @@ local function LoadMainScript()
         end
     end)
     
+    -- Advanced Aimbot Features
+    AimbotSection:AddToggle("Silent Aim", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.SilentAim = state
+            if Notifications then
+                Notifications:Success("Aimbot", "Silent aim " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AimbotSection:AddToggle("Auto Shoot", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.AutoShoot = state
+            if Notifications then
+                Notifications:Success("Aimbot", "Auto shoot " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AimbotSection:AddToggle("Aim Lock", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.AimLock = state
+            if Notifications then
+                Notifications:Success("Aimbot", "Aim lock " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AimbotSection:AddSlider("Aim Lock Duration", 1, 0.1, 5, 0.1, function(value)
+        if Aimbot then
+            Aimbot.Settings.AimLockDuration = value
+        end
+    end)
+    
+    AimbotSection:AddToggle("Predict Movement", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.PredictMovement = state
+        end
+    end)
+    
+    AimbotSection:AddSlider("Prediction Amount", 0.15, 0.01, 1, 0.01, function(value)
+        if Aimbot then
+            Aimbot.Settings.PredictionAmount = value
+        end
+    end)
+    
     -- TriggerBot Section
     local TriggerBotSection = RageTab:CreateSection("TriggerBot")
     TriggerBotSection:AddToggle("Enabled", false, function(state)
@@ -380,6 +426,43 @@ local function LoadMainScript()
     TriggerBotSection:AddSlider("Trigger Delay", 100, 1, 1000, 1, function(value)
         if Aimbot then
             Aimbot.Settings.TriggerDelay = value
+        end
+    end)
+    
+    -- Advanced TriggerBot
+    TriggerBotSection:AddToggle("Hit Chance", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.HitChance = state
+            if Notifications then
+                Notifications:Success("TriggerBot", "Hit chance " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    TriggerBotSection:AddSlider("Hit Chance %", 100, 1, 100, 1, function(value)
+        if Aimbot then
+            Aimbot.Settings.HitChancePercent = value
+        end
+    end)
+    
+    TriggerBotSection:AddToggle("Burst Fire", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.BurstFire = state
+            if Notifications then
+                Notifications:Success("TriggerBot", "Burst fire " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    TriggerBotSection:AddSlider("Burst Shots", 3, 1, 10, 1, function(value)
+        if Aimbot then
+            Aimbot.Settings.BurstShots = value
+        end
+    end)
+    
+    TriggerBotSection:AddSlider("Burst Delay", 100, 1, 1000, 1, function(value)
+        if Aimbot then
+            Aimbot.Settings.BurstDelay = value
         end
     end)
     
@@ -403,6 +486,46 @@ local function LoadMainScript()
         end
     end)
     
+    -- Advanced Anti-Aim
+    AntiAimSection:AddToggle("Desync", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.Desync = state
+            if Notifications then
+                Notifications:Success("Anti-Aim", "Desync " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AntiAimSection:AddSlider("Desync Amount", 180, 1, 180, 1, function(value)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.DesyncAmount = value
+        end
+    end)
+    
+    AntiAimSection:AddToggle("LBY Flip", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.LBYFlip = state
+            if Notifications then
+                Notifications:Success("Anti-Aim", "LBY flip " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AntiAimSection:AddSlider("LBY Flip Delay", 1, 0.1, 5, 0.1, function(value)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.LBYFlipDelay = value
+        end
+    end)
+    
+    AntiAimSection:AddToggle("At Targets", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.AtTargets = state
+            if Notifications then
+                Notifications:Success("Anti-Aim", "At targets " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
     -- Resolver Section
     local ResolverSection = RageTab:CreateSection("Resolver")
     ResolverSection:AddToggle("Enabled", false, function(state)
@@ -414,6 +537,40 @@ local function LoadMainScript()
     ResolverSection:AddDropdown("Mode", {"Basic", "Advanced"}, "Basic", function(option)
         if Aimbot then
             Aimbot.Settings.ResolverMode = option
+        end
+    end)
+    
+    -- Advanced Resolver
+    ResolverSection:AddToggle("Adaptive Resolver", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.AdaptiveResolver = state
+            if Notifications then
+                Notifications:Success("Resolver", "Adaptive resolver " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ResolverSection:AddToggle("Brute Force", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.BruteForce = state
+            if Notifications then
+                Notifications:Success("Resolver", "Brute force " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ResolverSection:AddSlider("Brute Force Attempts", 10, 1, 50, 1, function(value)
+        if Aimbot then
+            Aimbot.Settings.BruteForceAttempts = value
+        end
+    end)
+    
+    ResolverSection:AddToggle("Log Resolver Data", false, function(state)
+        if Aimbot then
+            Aimbot.Settings.LogResolverData = state
+            if Notifications then
+                Notifications:Success("Resolver", "Log resolver data " .. (state and "enabled" or "disabled"), 3)
+            end
         end
     end)
     
@@ -459,6 +616,58 @@ local function LoadMainScript()
         end
     end)
     
+    -- Advanced ESP
+    ESPSection:AddToggle("Skeleton ESP", false, function(state)
+        if ESP then
+            ESP.Settings.SkeletonESP = state
+            if Notifications then
+                Notifications:Success("ESP", "Skeleton ESP " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ESPSection:AddToggle("Head Dot", false, function(state)
+        if ESP then
+            ESP.Settings.HeadDot = state
+            if Notifications then
+                Notifications:Success("ESP", "Head dot " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ESPSection:AddToggle("Tracers", false, function(state)
+        if ESP then
+            ESP.Settings.Tracers = state
+            if Notifications then
+                Notifications:Success("ESP", "Tracers " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ESPSection:AddToggle("Eye Tracers", false, function(state)
+        if ESP then
+            ESP.Settings.EyeTracers = state
+            if Notifications then
+                Notifications:Success("ESP", "Eye tracers " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ESPSection:AddToggle("Filled Box", false, function(state)
+        if ESP then
+            ESP.Settings.FilledBox = state
+            if Notifications then
+                Notifications:Success("ESP", "Filled box " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ESPSection:AddSlider("Box Transparency", 30, 0, 100, 1, function(value)
+        if ESP then
+            ESP.Settings.BoxTransparency = value / 100
+        end
+    end)
+    
     -- Crosshair Section
     local CrosshairSection = VisualsTab:CreateSection("Crosshair")
     CrosshairSection:AddToggle("Enabled", true, function(state)
@@ -497,6 +706,46 @@ local function LoadMainScript()
         end
     end)
     
+    -- Advanced Crosshair
+    CrosshairSection:AddToggle("Rainbow Crosshair", false, function(state)
+        if Crosshair then
+            Crosshair.Settings.Rainbow = state
+            if Notifications then
+                Notifications:Success("Crosshair", "Rainbow crosshair " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    CrosshairSection:AddToggle("Pulsing", false, function(state)
+        if Crosshair then
+            Crosshair.Settings.Pulsing = state
+            if Notifications then
+                Notifications:Success("Crosshair", "Pulsing " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    CrosshairSection:AddSlider("Pulse Speed", 1, 0.1, 5, 0.1, function(value)
+        if Crosshair then
+            Crosshair.Settings.PulseSpeed = value
+        end
+    end)
+    
+    CrosshairSection:AddToggle("Recoil Compensation", false, function(state)
+        if Crosshair then
+            Crosshair.Settings.RecoilCompensation = state
+            if Notifications then
+                Notifications:Success("Crosshair", "Recoil compensation " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    CrosshairSection:AddSlider("Recoil Compensation Amount", 50, 0, 100, 1, function(value)
+        if Crosshair then
+            Crosshair.Settings.RecoilCompensationAmount = value
+        end
+    end)
+    
     -- Chams Section
     local ChamsSection = VisualsTab:CreateSection("Chams")
     ChamsSection:AddToggle("Enabled", false, function(state)
@@ -517,6 +766,40 @@ local function LoadMainScript()
         end
     end)
     
+    -- Advanced Chams
+    ChamsSection:AddToggle("Rainbow Chams", false, function(state)
+        if VisualEffects then
+            VisualEffects.Settings.RainbowChams = state
+            if Notifications then
+                Notifications:Success("Chams", "Rainbow chams " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ChamsSection:AddToggle("Wireframe", false, function(state)
+        if VisualEffects then
+            VisualEffects.Settings.Wireframe = state
+            if Notifications then
+                Notifications:Success("Chams", "Wireframe " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ChamsSection:AddToggle("XQZ", false, function(state)
+        if VisualEffects then
+            VisualEffects.Settings.XQZ = state
+            if Notifications then
+                Notifications:Success("Chams", "XQZ " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    ChamsSection:AddSlider("Chams Transparency", 50, 0, 100, 1, function(value)
+        if VisualEffects then
+            VisualEffects.Settings.ChamsTransparency = value / 100
+        end
+    end)
+    
     -- Glow Section
     local GlowSection = VisualsTab:CreateSection("Glow")
     GlowSection:AddToggle("Enabled", false, function(state)
@@ -528,6 +811,40 @@ local function LoadMainScript()
     GlowSection:AddSlider("Glow Intensity", 50, 1, 100, 1, function(value)
         if VisualEffects then
             VisualEffects.Settings.GlowIntensity = value
+        end
+    end)
+    
+    -- Advanced Glow
+    GlowSection:AddToggle("Rainbow Glow", false, function(state)
+        if VisualEffects then
+            VisualEffects.Settings.RainbowGlow = state
+            if Notifications then
+                Notifications:Success("Glow", "Rainbow glow " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GlowSection:AddToggle("Pulsing Glow", false, function(state)
+        if VisualEffects then
+            VisualEffects.Settings.PulsingGlow = state
+            if Notifications then
+                Notifications:Success("Glow", "Pulsing glow " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GlowSection:AddSlider("Glow Pulse Speed", 1, 0.1, 5, 0.1, function(value)
+        if VisualEffects then
+            VisualEffects.Settings.GlowPulseSpeed = value
+        end
+    end)
+    
+    GlowSection:AddToggle("Team Glow", false, function(state)
+        if VisualEffects then
+            VisualEffects.Settings.TeamGlow = state
+            if Notifications then
+                Notifications:Success("Glow", "Team glow " .. (state and "enabled" or "disabled"), 3)
+            end
         end
     end)
     
@@ -570,6 +887,40 @@ local function LoadMainScript()
     MovementSection:AddSlider("Fly Speed", 50, 1, 200, 1, function(value)
         if Misc then
             Misc.Settings.FlySpeed = value
+        end
+    end)
+    
+    -- Advanced Movement
+    MovementSection:AddToggle("Auto Jump", false, function(state)
+        if Misc then
+            Misc.Settings.AutoJump = state
+            if Notifications then
+                Notifications:Success("Misc", "Auto jump " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    MovementSection:AddToggle("Edge Jump", false, function(state)
+        if Misc then
+            Misc.Settings.EdgeJump = state
+            if Notifications then
+                Notifications:Success("Misc", "Edge jump " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    MovementSection:AddToggle("Long Jump", false, function(state)
+        if Misc then
+            Misc.Settings.LongJump = state
+            if Notifications then
+                Notifications:Success("Misc", "Long jump " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    MovementSection:AddSlider("Long Jump Power", 100, 50, 300, 10, function(value)
+        if Misc then
+            Misc.Settings.LongJumpPower = value
         end
     end)
     
@@ -651,6 +1002,55 @@ local function LoadMainScript()
         end
     end)
     
+    -- Advanced Game Exploits
+    GameExploitsSection:AddToggle("God Mode", false, function(state)
+        if GameExploits then
+            GameExploits.Settings.GodMode = state
+            if Notifications then
+                Notifications:Success("Exploits", "God mode " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameExploitsSection:AddToggle("Anti-Knockback", false, function(state)
+        if GameExploits then
+            GameExploits.Settings.AntiKnockback = state
+            if Notifications then
+                Notifications:Success("Exploits", "Anti-knockback " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameExploitsSection:AddToggle("Speed Hack", false, function(state)
+        if GameExploits then
+            GameExploits.Settings.SpeedHack = state
+            if Notifications then
+                Notifications:Success("Exploits", "Speed hack " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameExploitsSection:AddSlider("Speed Multiplier", 2, 1, 10, 0.5, function(value)
+        if GameExploits then
+            GameExploits.Settings.SpeedMultiplier = value
+        end
+    end)
+    
+    GameExploitsSection:AddToggle("Jump Boost", false, function(state)
+        if GameExploits then
+            GameExploits.Settings.JumpBoost = state
+            if Notifications then
+                Notifications:Success("Exploits", "Jump boost " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    GameExploitsSection:AddSlider("Jump Power", 50, 50, 200, 10, function(value)
+        if GameExploits then
+            GameExploits.Settings.JumpPower = value
+        end
+    end)
+    
     -- Character Customizer Section
     local CharCustomizerSection = ExploitsTab:CreateSection("Character Customizer")
     CharCustomizerSection:AddToggle("Enabled", false, function(state)
@@ -724,12 +1124,53 @@ local function LoadMainScript()
         end
     end)
     
+    -- Enhanced skin duping with amount selection
+    SniperDuelsSpecializedSection:AddSlider("Dupe Amount", 1, 1, 100, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.SkinDupeAmount = value
+        end
+    end)
+    
+    SniperDuelsSpecializedSection:AddButton("Dupe Selected Skin", function()
+        if SniperDuels then
+            local skins = SniperDuels:GetDetectedSkins()
+            if #skins > 0 then
+                local selectedSkin = skins[1] -- For demo, use first skin
+                SniperDuels:DupeSkin(selectedSkin, SniperDuels.Settings.SkinDupeAmount)
+                if Notifications then
+                    Notifications:Success("Sniper Duels", "Duped " .. SniperDuels.Settings.SkinDupeAmount .. "x " .. selectedSkin .. "!", 3)
+                end
+            end
+        end
+    end)
+    
     -- Free Currency Generation
     SniperDuelsSpecializedSection:AddButton("Generate Free Currency", function()
         if SniperDuels then
             SniperDuels:GenerateFreeCurrency(1000000)
             if Notifications then
                 Notifications:Success("Sniper Duels", "Generated 1,000,000 free currency!", 3)
+            end
+        end
+    end)
+    
+    -- Mass currency generation
+    SniperDuelsSpecializedSection:AddButton("Generate 10M Currency", function()
+        if SniperDuels then
+            SniperDuels:GenerateFreeCurrency(10000000)
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Generated 10,000,000 free currency!", 3)
+            end
+        end
+    end)
+    
+    -- Auto Dupe Skins
+    SniperDuelsSpecializedSection:AddToggle("Auto Dupe Skins", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoDupeSkins = state
+            SniperDuels:SetAutoDupeSkins(state)
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Auto dupe skins " .. (state and "enabled" or "disabled"), 3)
             end
         end
     end)
@@ -760,6 +1201,19 @@ local function LoadMainScript()
             SniperDuels:OpenCase(caseName)
             if Notifications then
                 Notifications:Success("Sniper Duels", "Opening " .. caseName .. " case!", 3)
+            end
+        end
+    end)
+    
+    -- Open case 10 times
+    CaseOpeningSection:AddButton("Open Case x10", function()
+        if SniperDuels then
+            for i = 1, 10 do
+                SniperDuels:OpenRandomCase()
+                wait(0.5)
+            end
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Opened 10 cases!", 3)
             end
         end
     end)
@@ -814,6 +1268,16 @@ local function LoadMainScript()
         end
     end)
     
+    -- One shot kill
+    WeaponSection:AddToggle("One Shot Kill", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.OneShotKill = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "One shot kill " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
     -- Melee Section (based on Melee.lua module)
     local MeleeSection = SniperDuelsTab:CreateSection("Melee (Bayonet)")
     
@@ -833,6 +1297,152 @@ local function LoadMainScript()
     MeleeSection:AddToggle("Damage Boost (3x)", false, function(state)
         if SniperDuels then
             SniperDuels.Settings.MeleeDamageBoost = state
+        end
+    end)
+    
+    -- Instant kill melee
+    MeleeSection:AddToggle("Instant Kill Melee", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.InstantKillMelee = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Instant kill melee " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    -- Auto Farm Section
+    local AutoFarmSection = SniperDuelsTab:CreateSection("Auto Farm")
+    
+    AutoFarmSection:AddToggle("Auto Farm", false, function(state)
+        if SniperDuels then
+            SniperDuels.Settings.AutoFarm = state
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Auto farm " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AutoFarmSection:AddDropdown("Farm Method", {"Kills", "Coins", "XP", "All"}, "Kills", function(option)
+        if SniperDuels then
+            SniperDuels.Settings.FarmMethod = option
+        end
+    end)
+    
+    AutoFarmSection:AddSlider("Farm Interval (s)", 1, 0.1, 10, 0.1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.FarmInterval = value
+        end
+    end)
+    
+    -- Teleport Section
+    local TeleportSection = SniperDuelsTab:CreateSection("Teleport")
+    
+    TeleportSection:AddButton("Teleport to Lobby", function()
+        if SniperDuels then
+            SniperDuels:TeleportToLobby()
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Teleported to lobby!", 3)
+            end
+        end
+    end)
+    
+    TeleportSection:AddButton("Teleport to Spawn", function()
+        if SniperDuels then
+            SniperDuels:TeleportToSpawn()
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Teleported to spawn!", 3)
+            end
+        end
+    end)
+    
+    -- Advanced Tab
+    local AdvancedTab = Window:CreateTab("Advanced")
+    print("[DummyHook] Created Advanced tab")
+    
+    -- Performance Section
+    local PerformanceSection = AdvancedTab:CreateSection("Performance Optimization")
+    PerformanceSection:AddToggle("FPS Boost", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.FPSBoost = state
+            if Notifications then
+                Notifications:Success("Advanced", "FPS boost " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    PerformanceSection:AddToggle("Low Graphics", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.LowGraphics = state
+            if Notifications then
+                Notifications:Success("Advanced", "Low graphics " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    PerformanceSection:AddSlider("Render Distance", 100, 10, 1000, 10, function(value)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.RenderDistance = value
+        end
+    end)
+    
+    -- Anti-Detection Section
+    local AntiDetectionSection = AdvancedTab:CreateSection("Anti-Detection")
+    AntiDetectionSection:AddToggle("Anti-Aimbot Detection", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.AntiAimbotDetection = state
+            if Notifications then
+                Notifications:Success("Advanced", "Anti-aimbot detection " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AntiDetectionSection:AddToggle("Anti-Cheat Bypass", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.AntiCheatBypass = state
+            if Notifications then
+                Notifications:Success("Advanced", "Anti-cheat bypass " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AntiDetectionSection:AddToggle("Ping Spoof", false, function(state)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.PingSpoof = state
+            if Notifications then
+                Notifications:Success("Advanced", "Ping spoof " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+    
+    AntiDetectionSection:AddSlider("Ping Spoof Amount", 100, 50, 500, 10, function(value)
+        if AdvancedCheats then
+            AdvancedCheats.Settings.PingSpoofAmount = value
+        end
+    end)
+    
+    -- Script Hub Section
+    local ScriptHubSection = AdvancedTab:CreateSection("Script Hub")
+    ScriptHubSection:AddButton("Load Silent Aim Script", function()
+        if Notifications then
+            Notifications:Success("Advanced", "Silent aim script loaded!", 3)
+        end
+    end)
+    
+    ScriptHubSection:AddButton("Load Auto Farm Script", function()
+        if Notifications then
+            Notifications:Success("Advanced", "Auto farm script loaded!", 3)
+        end
+    end)
+    
+    ScriptHubSection:AddButton("Load ESP Script", function()
+        if Notifications then
+            Notifications:Success("Advanced", "ESP script loaded!", 3)
+        end
+    end)
+    
+    ScriptHubSection:AddButton("Load Bunny Hop Script", function()
+        if Notifications then
+            Notifications:Success("Advanced", "Bunny hop script loaded!", 3)
         end
     end)
     

@@ -329,6 +329,73 @@ function VisualEffects:SetGlow(value)
     end
 end
 
+function VisualEffects:SetRainbowChams(value)
+    self.Settings.RainbowChams = value
+    -- Refresh chams if enabled
+    if self.Settings.Chams then
+        self:CreateChams()
+    end
+end
+
+function VisualEffects:SetWireframe(value)
+    self.Settings.Wireframe = value
+    -- Refresh chams if enabled
+    if self.Settings.Chams then
+        self:CreateChams()
+    end
+end
+
+function VisualEffects:SetXQZ(value)
+    self.Settings.XQZ = value
+    -- Refresh chams if enabled
+    if self.Settings.Chams then
+        self:CreateChams()
+    end
+end
+
+function VisualEffects:SetChamsTransparency(value)
+    self.Settings.ChamsTransparency = value
+    -- Refresh chams if enabled
+    if self.Settings.Chams then
+        self:CreateChams()
+    end
+end
+
+function VisualEffects:SetGlowIntensity(value)
+    self.Settings.GlowIntensity = value
+    if self.Settings.Glow then
+        self:CreateGlowEffect()
+    end
+end
+
+function VisualEffects:SetRainbowGlow(value)
+    self.Settings.RainbowGlow = value
+    if self.Settings.Glow then
+        self:CreateGlowEffect()
+    end
+end
+
+function VisualEffects:SetPulsingGlow(value)
+    self.Settings.PulsingGlow = value
+    if self.Settings.Glow then
+        self:CreateGlowEffect()
+    end
+end
+
+function VisualEffects:SetGlowPulseSpeed(value)
+    self.Settings.GlowPulseSpeed = value
+    if self.Settings.Glow then
+        self:CreateGlowEffect()
+    end
+end
+
+function VisualEffects:SetTeamGlow(value)
+    self.Settings.TeamGlow = value
+    if self.Settings.Glow then
+        self:CreateGlowEffect()
+    end
+end
+
 -- Cleanup
 function VisualEffects:Cleanup()
     for _, obj in pairs(self.EffectObjects) do

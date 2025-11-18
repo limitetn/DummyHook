@@ -613,6 +613,22 @@ function Misc:SetChatSpam(value)
     end
 end
 
+function Misc:SetAutoJump(value)
+    self.Settings.AutoJump = value
+end
+
+function Misc:SetEdgeJump(value)
+    self.Settings.EdgeJump = value
+end
+
+function Misc:SetLongJump(value)
+    self.Settings.LongJump = value
+end
+
+function Misc:SetLongJumpPower(value)
+    self.Settings.LongJumpPower = value
+end
+
 -- Cleanup
 function Misc:Cleanup()
     for _, connection in pairs(self.Connections) do

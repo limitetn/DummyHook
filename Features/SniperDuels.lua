@@ -771,6 +771,30 @@ function SniperDuels:SetMeleeDamageBoost(value)
     self.Settings.MeleeDamageBoost = value
 end
 
+function SniperDuels:SetOneShotKill(value)
+    self.Settings.OneShotKill = value
+end
+
+function SniperDuels:SetInstantKillMelee(value)
+    self.Settings.InstantKillMelee = value
+end
+
+function SniperDuels:SetAutoFarm(value)
+    self.Settings.AutoFarm = value
+end
+
+function SniperDuels:SetFarmMethod(value)
+    self.Settings.FarmMethod = value
+end
+
+function SniperDuels:SetFarmInterval(value)
+    self.Settings.FarmInterval = value
+end
+
+function SniperDuels:SetSkinDupeAmount(value)
+    self.Settings.SkinDupeAmount = value
+end
+
 -- Initialize
 function SniperDuels:Initialize()
     if self:IsSniperDuels() then

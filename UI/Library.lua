@@ -146,99 +146,440 @@ function Library:CreateWindow(config)
         end
     end)
     
-    -- Professional Intro Animation
+    -- Enhanced Professional Intro Animation with more beautiful and lively effects
     local IntroOverlay = CreateElement("Frame", {
         Name = "IntroOverlay",
         Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(15, 15, 18),
+        BackgroundColor3 = Color3.fromRGB(5, 5, 10),
         BorderSizePixel = 0,
         ZIndex = 1000,
         Parent = ScreenGui
     })
     
-    local Logo = CreateElement("TextLabel", {
-        Name = "Logo",
-        Size = UDim2.new(0, 200, 0, 60),
-        Position = UDim2.new(0.5, -100, 0.4, -30),
-        BackgroundTransparency = 1,
-        Text = "DUMMYHOOK",
-        TextColor3 = Color3.fromRGB(130, 195, 65),
-        TextSize = 36,
-        Font = Enum.Font.GothamBold,
-        TextXAlignment = Enum.TextXAlignment.Center,
+    -- Animated background gradient with multiple colors
+    local BackgroundGradient = CreateElement("UIGradient", {
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 10, 20)),
+            ColorSequenceKeypoint.new(0.2, Color3.fromRGB(25, 15, 35)),
+            ColorSequenceKeypoint.new(0.4, Color3.fromRGB(15, 25, 40)),
+            ColorSequenceKeypoint.new(0.6, Color3.fromRGB(30, 15, 45)),
+            ColorSequenceKeypoint.new(0.8, Color3.fromRGB(20, 10, 30)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 20))
+        },
+        Rotation = 0,
         Parent = IntroOverlay
     })
     
-    local Version = CreateElement("TextLabel", {
-        Name = "Version",
-        Size = UDim2.new(0, 100, 0, 20),
-        Position = UDim2.new(0.5, -50, 0.4, 40),
-        BackgroundTransparency = 1,
-        Text = "v1.0.0",
-        TextColor3 = Color3.fromRGB(180, 180, 180),
-        TextSize = 14,
-        Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Center,
-        Parent = IntroOverlay
-    })
-    
-    local LoadingDots = CreateElement("TextLabel", {
-        Name = "LoadingDots",
-        Size = UDim2.new(0, 100, 0, 20),
-        Position = UDim2.new(0.5, -50, 0.6, 0),
-        BackgroundTransparency = 1,
-        Text = "Loading",
-        TextColor3 = Color3.fromRGB(200, 200, 200),
-        TextSize = 16,
-        Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Center,
-        Parent = IntroOverlay
-    })
-    
-    -- Animate loading dots
+    -- Animate gradient rotation for dynamic effect
     spawn(function()
-        local dots = 0
+        local rotation = 0
         while IntroOverlay and IntroOverlay.Parent do
-            dots = (dots % 4) + 1
-            LoadingDots.Text = "Loading" .. string.rep(".", dots)
-            wait(0.5)
+            rotation = (rotation + 0.5) % 360
+            BackgroundGradient.Rotation = rotation
+            wait(0.02)
         end
     end)
     
-    -- Animate intro sequence
+    -- Enhanced animated particles with multiple colors and sizes
+    local Particles = {}
+    for i = 1, 30 do
+        local colors = {
+            Color3.fromRGB(130, 195, 65),  -- Green
+            Color3.fromRGB(90, 180, 220),  -- Blue
+            Color3.fromRGB(180, 90, 220),  -- Purple
+            Color3.fromRGB(220, 90, 90),   -- Red
+            Color3.fromRGB(220, 180, 90)   -- Yellow
+        }
+        
+        local particle = CreateElement("Frame", {
+            Name = "Particle" .. i,
+            Size = UDim2.new(0, math.random(3, 8), 0, math.random(3, 8)),
+            Position = UDim2.new(math.random(0, 100) / 100, 0, math.random(0, 100) / 100, 0),
+            BackgroundColor3 = colors[math.random(1, #colors)],
+            BorderSizePixel = 0,
+            BackgroundTransparency = 0.6,
+            Parent = IntroOverlay
+        })
+        
+        local particleCorner = CreateElement("UICorner", {
+            CornerRadius = UDim.new(1, 0),
+            Parent = particle
+        })
+        
+        -- Add glow effect to particles
+        local particleGlow = CreateElement("Frame", {
+            Size = UDim2.new(1, 6, 1, 6),
+            Position = UDim2.new(0.5, -3, 0.5, -3),
+            BackgroundColor3 = particle.BackgroundColor3,
+            BorderSizePixel = 0,
+            BackgroundTransparency = 0.8,
+            Parent = particle
+        })
+        
+        local glowCorner = CreateElement("UICorner", {
+            CornerRadius = UDim.new(1, 0),
+            Parent = particleGlow
+        })
+        
+        table.insert(Particles, {Main = particle, Glow = particleGlow, SpeedX = (math.random(-10, 10) / 200), SpeedY = (math.random(-10, 10) / 200)})
+    end
+    
+    -- Animate particles with more complex movement
     spawn(function()
-        -- Fade in logo and version
-        for i = 100, 0, -5 do
+        while IntroOverlay and IntroOverlay.Parent do
+            for _, particleData in pairs(Particles) do
+                local particle = particleData.Main
+                local glow = particleData.Glow
+                if particle and particle.Parent and glow and glow.Parent then
+                    local newX = particle.Position.X.Scale + particleData.SpeedX
+                    local newY = particle.Position.Y.Scale + particleData.SpeedY
+                    
+                    -- Bounce off edges
+                    if newX <= 0 or newX >= 1 then
+                        particleData.SpeedX = -particleData.SpeedX
+                        newX = math.clamp(newX, 0, 1)
+                    end
+                    
+                    if newY <= 0 or newY >= 1 then
+                        particleData.SpeedY = -particleData.SpeedY
+                        newY = math.clamp(newY, 0, 1)
+                    end
+                    
+                    particle.Position = UDim2.new(newX, particle.Position.X.Offset, newY, particle.Position.Y.Offset)
+                    
+                    -- Pulsing effect with color cycling
+                    local pulse = math.sin(tick() * 3 + particleData.SpeedX * 10) * 0.1
+                    particle.BackgroundTransparency = 0.5 + pulse
+                    glow.BackgroundTransparency = 0.7 + pulse
+                    
+                    -- Rotate particles
+                    particle.Rotation = (particle.Rotation + 1) % 360
+                end
+            end
+            wait(0.03)
+        end
+    end)
+    
+    -- Main logo container with enhanced glow effect
+    local LogoContainer = CreateElement("Frame", {
+        Name = "LogoContainer",
+        Size = UDim2.new(0, 350, 0, 120),
+        Position = UDim2.new(0.5, -175, 0.35, -60),
+        BackgroundTransparency = 1,
+        Parent = IntroOverlay
+    })
+    
+    -- Enhanced glow effect with multiple layers
+    local LogoGlow1 = CreateElement("Frame", {
+        Name = "LogoGlow1",
+        Size = UDim2.new(1, 40, 1, 40),
+        Position = UDim2.new(0.5, -195, 0.5, -80),
+        BackgroundColor3 = Color3.fromRGB(130, 195, 65),
+        BorderSizePixel = 0,
+        BackgroundTransparency = 0.92,
+        Parent = LogoContainer
+    })
+    
+    local GlowCorner1 = CreateElement("UICorner", {
+        CornerRadius = UDim.new(0, 30),
+        Parent = LogoGlow1
+    })
+    
+    local LogoGlow2 = CreateElement("Frame", {
+        Name = "LogoGlow2",
+        Size = UDim2.new(1, 60, 1, 60),
+        Position = UDim2.new(0.5, -205, 0.5, -90),
+        BackgroundColor3 = Color3.fromRGB(90, 180, 220),
+        BorderSizePixel = 0,
+        BackgroundTransparency = 0.95,
+        Parent = LogoContainer
+    })
+    
+    local GlowCorner2 = CreateElement("UICorner", {
+        CornerRadius = UDim.new(0, 40),
+        Parent = LogoGlow2
+    })
+    
+    -- Animate glow pulsing with multiple layers
+    spawn(function()
+        while (LogoGlow1 and LogoGlow1.Parent) or (LogoGlow2 and LogoGlow2.Parent) do
+            local pulse = math.sin(tick() * 4) * 0.03
+            
+            if LogoGlow1 and LogoGlow1.Parent then
+                LogoGlow1.BackgroundTransparency = 0.89 + pulse
+                LogoGlow1.Size = UDim2.new(1, 40 + math.sin(tick() * 3) * 10, 1, 40 + math.sin(tick() * 3) * 10)
+                LogoGlow1.Position = UDim2.new(0.5, -195 - math.sin(tick() * 3) * 5, 0.5, -80 - math.sin(tick() * 3) * 5)
+            end
+            
+            if LogoGlow2 and LogoGlow2.Parent then
+                LogoGlow2.BackgroundTransparency = 0.92 + pulse
+                LogoGlow2.Size = UDim2.new(1, 60 + math.sin(tick() * 2) * 15, 1, 60 + math.sin(tick() * 2) * 15)
+                LogoGlow2.Position = UDim2.new(0.5, -205 - math.sin(tick() * 2) * 7.5, 0.5, -90 - math.sin(tick() * 2) * 7.5)
+            end
+            
+            wait(0.03)
+        end
+    end)
+    
+    -- Main logo text with enhanced styling
+    local Logo = CreateElement("TextLabel", {
+        Name = "Logo",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = "DUMMYHOOK",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 48,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        TextYAlignment = Enum.TextYAlignment.Center,
+        Parent = LogoContainer
+    })
+    
+    -- Add a subtle shadow to the logo
+    local LogoShadow = CreateElement("TextLabel", {
+        Name = "LogoShadow",
+        Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 2, 0, 2),
+        BackgroundTransparency = 1,
+        Text = "DUMMYHOOK",
+        TextColor3 = Color3.fromRGB(0, 0, 0),
+        TextTransparency = 0.7,
+        TextSize = 48,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        TextYAlignment = Enum.TextYAlignment.Center,
+        Parent = LogoContainer
+    })
+    
+    -- Enhanced version text with animation
+    local Version = CreateElement("TextLabel", {
+        Name = "Version",
+        Size = UDim2.new(0, 150, 0, 25),
+        Position = UDim2.new(0.5, -75, 0.35, 70),
+        BackgroundTransparency = 1,
+        Text = "PREMIUM EDITION v2.5",
+        TextColor3 = Color3.fromRGB(180, 180, 180),
+        TextSize = 18,
+        Font = Enum.Font.GothamSemibold,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Parent = IntroOverlay
+    })
+    
+    -- Loading bar container with enhanced styling
+    local LoadingContainer = CreateElement("Frame", {
+        Name = "LoadingContainer",
+        Size = UDim2.new(0, 250, 0, 6),
+        Position = UDim2.new(0.5, -125, 0.55, 0),
+        BackgroundColor3 = Color3.fromRGB(25, 25, 30),
+        BorderSizePixel = 0,
+        Parent = IntroOverlay
+    })
+    
+    local LoadingCorner = CreateElement("UICorner", {
+        CornerRadius = UDim.new(0, 3),
+        Parent = LoadingContainer
+    })
+    
+    -- Loading bar with gradient
+    local LoadingBar = CreateElement("Frame", {
+        Name = "LoadingBar",
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(130, 195, 65),
+        BorderSizePixel = 0,
+        Parent = LoadingContainer
+    })
+    
+    local BarCorner = CreateElement("UICorner", {
+        CornerRadius = UDim.new(0, 3),
+        Parent = LoadingBar
+    })
+    
+    -- Add gradient to loading bar
+    local BarGradient = CreateElement("UIGradient", {
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(130, 195, 65)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(90, 180, 220)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 90, 220))
+        },
+        Rotation = 0,
+        Parent = LoadingBar
+    })
+    
+    -- Loading text with enhanced styling
+    local LoadingText = CreateElement("TextLabel", {
+        Name = "LoadingText",
+        Size = UDim2.new(0, 250, 0, 25),
+        Position = UDim2.new(0.5, -125, 0.55, 15),
+        BackgroundTransparency = 1,
+        Text = "Initializing security protocols...",
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        TextSize = 15,
+        Font = Enum.Font.Gotham,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Parent = IntroOverlay
+    })
+    
+    -- Enhanced loading messages with more detailed steps
+    local loadingMessages = {
+        "Initializing security protocols...",
+        "Connecting to premium servers...",
+        "Loading advanced modules...",
+        "Verifying authentication...",
+        "Establishing secure connection...",
+        "Loading UI components...",
+        "Initializing cheat modules...",
+        "Applying premium features...",
+        "Finalizing setup...",
+        "Access granted. Welcome to DummyHook Premium!"
+    }
+    
+    -- Animate intro sequence with enhanced effects
+    spawn(function()
+        -- Animate logo entrance with scaling effect
+        Logo.TextTransparency = 1
+        LogoShadow.TextTransparency = 0.7
+        Version.TextTransparency = 1
+        LoadingText.TextTransparency = 1
+        
+        -- Scale in logo
+        Logo.Size = UDim2.new(1.2, 0, 1.2, 0)
+        Logo.Position = UDim2.new(0.5, -210, 0.35, -72)
+        LogoShadow.Size = UDim2.new(1.2, 0, 1.2, 0)
+        LogoShadow.Position = UDim2.new(0.5, -208, 0.35, -70)
+        
+        -- Fade in and scale to normal
+        for i = 100, 0, -3 do
             if Logo and Logo.Parent then
                 Logo.TextTransparency = i / 100
+                Logo.Size = UDim2.new(1 + (i / 100) * 0.2, 0, 1 + (i / 100) * 0.2, 0)
+                Logo.Position = UDim2.new(0.5, -175 - (i / 100) * 35, 0.35, -60 - (i / 100) * 12)
+            end
+            if LogoShadow and LogoShadow.Parent then
+                LogoShadow.TextTransparency = 0.7 + (i / 100) * 0.3
+                LogoShadow.Size = UDim2.new(1 + (i / 100) * 0.2, 0, 1 + (i / 100) * 0.2, 0)
+                LogoShadow.Position = UDim2.new(0.5, -173 - (i / 100) * 35, 0.35, -58 - (i / 100) * 12)
             end
             if Version and Version.Parent then
                 Version.TextTransparency = i / 100
             end
-            if LoadingDots and LoadingDots.Parent then
-                LoadingDots.TextTransparency = i / 100
+            if LoadingText and LoadingText.Parent then
+                LoadingText.TextTransparency = i / 100
             end
-            wait(0.02)
+            wait(0.01)
         end
         
-        -- Wait for 2 seconds
+        -- Animate loading bar with bouncing effect
+        local currentMessage = 1
+        for i = 0, 100, 1 do
+            if LoadingBar and LoadingBar.Parent then
+                LoadingBar.Size = UDim2.new(i / 100, 0, 1, 0)
+                
+                -- Add bouncing effect to loading bar
+                local bounce = math.sin(tick() * 10 + i / 10) * 0.1
+                LoadingBar.Size = UDim2.new(i / 100, 0, 1 + bounce, 0)
+            end
+            
+            -- Update loading message with smoother transitions
+            if i % 10 == 0 and currentMessage <= #loadingMessages then
+                if LoadingText and LoadingText.Parent then
+                    -- Fade out
+                    for j = 0, 100, 10 do
+                        LoadingText.TextTransparency = j / 100
+                        wait(0.005)
+                    end
+                    
+                    LoadingText.Text = loadingMessages[currentMessage]
+                    
+                    -- Fade in
+                    for j = 100, 0, -10 do
+                        LoadingText.TextTransparency = j / 100
+                        wait(0.005)
+                    end
+                end
+                currentMessage = currentMessage + 1
+            end
+            
+            wait(0.04)
+        end
+        
+        -- Final message with enhanced effect
+        if LoadingText and LoadingText.Parent then
+            -- Fade out
+            for j = 0, 100, 5 do
+                LoadingText.TextTransparency = j / 100
+                wait(0.01)
+            end
+            
+            LoadingText.Text = "Access granted. Welcome to DummyHook Premium!"
+            LoadingText.TextColor3 = Color3.fromRGB(100, 255, 100)
+            
+            -- Fade in
+            for j = 100, 0, -5 do
+                LoadingText.TextTransparency = j / 100
+                wait(0.01)
+            end
+        end
+        
+        -- Wait for dramatic effect
         wait(2)
         
-        -- Fade out intro overlay
-        for i = 0, 100, 5 do
+        -- Animate exit sequence with enhanced effects
+        -- Fade out all elements with scaling
+        for i = 0, 100, 2 do
+            local progress = i / 100
+            
             if IntroOverlay and IntroOverlay.Parent then
-                IntroOverlay.BackgroundTransparency = i / 100
+                IntroOverlay.BackgroundTransparency = progress
             end
+            
+            if LogoContainer and LogoContainer.Parent then
+                LogoContainer.BackgroundTransparency = progress
+                -- Scale down
+                local scale = 1 - progress
+                LogoContainer.Size = UDim2.new(0, 350 * scale, 0, 120 * scale)
+                LogoContainer.Position = UDim2.new(0.5, -175 * scale, 0.35, -60 * scale)
+            end
+            
             if Logo and Logo.Parent then
-                Logo.TextTransparency = i / 100
+                Logo.TextTransparency = progress
             end
+            
+            if LogoShadow and LogoShadow.Parent then
+                LogoShadow.TextTransparency = 0.7 + progress * 0.3
+            end
+            
             if Version and Version.Parent then
-                Version.TextTransparency = i / 100
+                Version.TextTransparency = progress
             end
-            if LoadingDots and LoadingDots.Parent then
-                LoadingDots.TextTransparency = i / 100
+            
+            if LoadingText and LoadingText.Parent then
+                LoadingText.TextTransparency = progress
             end
-            wait(0.02)
+            
+            if LoadingContainer and LoadingContainer.Parent then
+                LoadingContainer.BackgroundTransparency = progress
+            end
+            
+            if LoadingBar and LoadingBar.Parent then
+                LoadingBar.BackgroundTransparency = progress
+            end
+            
+            -- Fade out and scale down particles
+            for _, particleData in pairs(Particles) do
+                local particle = particleData.Main
+                local glow = particleData.Glow
+                if particle and particle.Parent then
+                    particle.BackgroundTransparency = progress
+                    -- Scale down
+                    local scale = 1 - progress
+                    particle.Size = UDim2.new(0, particle.Size.X.Offset * scale, 0, particle.Size.Y.Offset * scale)
+                end
+                if glow and glow.Parent then
+                    glow.BackgroundTransparency = 0.7 + progress * 0.3
+                end
+            end
+            
+            wait(0.015)
         end
         
         -- Destroy intro overlay

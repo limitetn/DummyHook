@@ -583,6 +583,26 @@ function Crosshair:SetOutline(value)
     end
 end
 
+function Crosshair:SetRainbow(value)
+    self.Settings.RainbowMode = value
+end
+
+function Crosshair:SetPulsing(value)
+    self.Settings.Pulsing = value
+end
+
+function Crosshair:SetPulseSpeed(value)
+    self.Settings.PulseSpeed = value
+end
+
+function Crosshair:SetRecoilCompensation(value)
+    self.Settings.RecoilCompensation = value
+end
+
+function Crosshair:SetRecoilCompensationAmount(value)
+    self.Settings.RecoilCompensationAmount = value
+end
+
 -- Initialize Crosshair
 function Crosshair:Initialize()
     -- Set up any initial state or connections

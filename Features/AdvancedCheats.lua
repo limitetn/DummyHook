@@ -516,4 +516,52 @@ function AdvancedCheats:SetAntiAimYaw(value)
     self.Settings.AntiAimYaw = value
 end
 
+function AdvancedCheats:SetDesync(value)
+    self.Settings.Desync = value
+end
+
+function AdvancedCheats:SetDesyncAmount(value)
+    self.Settings.DesyncAmount = value
+end
+
+function AdvancedCheats:SetLBYFlip(value)
+    self.Settings.LBYFlip = value
+end
+
+function AdvancedCheats:SetLBYFlipDelay(value)
+    self.Settings.LBYFlipDelay = value
+end
+
+function AdvancedCheats:SetAtTargets(value)
+    self.Settings.AtTargets = value
+end
+
+function AdvancedCheats:SetFPSBoost(value)
+    self.Settings.FPSBoost = value
+end
+
+function AdvancedCheats:SetLowGraphics(value)
+    self.Settings.LowGraphics = value
+end
+
+function AdvancedCheats:SetRenderDistance(value)
+    self.Settings.RenderDistance = value
+end
+
+function AdvancedCheats:SetAntiAimbotDetection(value)
+    self.Settings.AntiAimbotDetection = value
+end
+
+function AdvancedCheats:SetAntiCheatBypass(value)
+    self.Settings.AntiCheatBypass = value
+end
+
+function AdvancedCheats:SetPingSpoof(value)
+    self.Settings.PingSpoof = value
+end
+
+function AdvancedCheats:SetPingSpoofAmount(value)
+    self.Settings.PingSpoofAmount = value
+end
+
 return AdvancedCheats

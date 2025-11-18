@@ -436,6 +436,30 @@ function ESP:SetWeaponESP(value)
     self.Settings.ShowWeapon = value
 end
 
+function ESP:SetSkeletonESP(value)
+    self.Settings.SkeletonESP = value
+end
+
+function ESP:SetHeadDot(value)
+    self.Settings.HeadDot = value
+end
+
+function ESP:SetTracers(value)
+    self.Settings.Tracers = value
+end
+
+function ESP:SetEyeTracers(value)
+    self.Settings.LookTracers = value
+end
+
+function ESP:SetFilledBox(value)
+    self.Settings.FilledBox = value
+end
+
+function ESP:SetBoxTransparency(value)
+    self.Settings.BoxTransparency = value
+end
+
 -- Initialize ESP
 function ESP:Initialize()
     -- Set up any initial state or connections
