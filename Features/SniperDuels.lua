@@ -80,18 +80,26 @@ function SniperDuels:OpenCase(caseType)
         for _, remote in pairs(remotes) do
             if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
                 local remoteName = remote.Name:lower()
-                if remoteName:find("case") or remoteName:find("open") or remoteName:find("crate") then
+                if remoteName:find("case") or remoteName:find("open") or remoteName:find("crate") or remoteName:find("roll") or remoteName:find("unlock") then
                     -- Try different methods to open case for free
                     if remote:IsA("RemoteEvent") then
                         remote:FireServer(caseType, true) -- Free parameter
                         remote:FireServer(caseType, "free")
                         remote:FireServer("open", caseType)
                         remote:FireServer("free_open", caseType)
+                        remote:FireServer("unlock", caseType)
+                        remote:FireServer(caseType, 0) -- Free currency
+                        remote:FireServer("roll", caseType)
+                        remote:FireServer("claim", caseType)
                     else
                         remote:InvokeServer(caseType, true) -- Free parameter
                         remote:InvokeServer(caseType, "free")
                         remote:InvokeServer("open", caseType)
                         remote:InvokeServer("free_open", caseType)
+                        remote:InvokeServer("unlock", caseType)
+                        remote:InvokeServer(caseType, 0) -- Free currency
+                        remote:InvokeServer("roll", caseType)
+                        remote:InvokeServer("claim", caseType)
                     end
                 end
             end
@@ -137,7 +145,7 @@ function SniperDuels:DupeSkin(skinName, amount)
         for _, remote in pairs(remotes) do
             if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
                 local remoteName = remote.Name:lower()
-                if remoteName:find("skin") or remoteName:find("inventory") or remoteName:find("item") then
+                if remoteName:find("skin") or remoteName:find("inventory") or remoteName:find("item") or remoteName:find("dupe") or remoteName:find("clone") then
                     -- Try to dupe skin
                     for i = 1, amount do
                         if remote:IsA("RemoteEvent") then
@@ -145,11 +153,19 @@ function SniperDuels:DupeSkin(skinName, amount)
                             remote:FireServer("dupe", skinName, 1)
                             remote:FireServer("clone", skinName, 1)
                             remote:FireServer(skinName, "duplicate")
+                            remote:FireServer("copy", skinName, 1)
+                            remote:FireServer("replicate", skinName, 1)
+                            remote:FireServer(skinName, "copy")
+                            remote:FireServer("acquire", skinName, 1)
                         else
                             remote:InvokeServer("duplicate", skinName, 1)
                             remote:InvokeServer("dupe", skinName, 1)
                             remote:InvokeServer("clone", skinName, 1)
                             remote:InvokeServer(skinName, "duplicate")
+                            remote:InvokeServer("copy", skinName, 1)
+                            remote:InvokeServer("replicate", skinName, 1)
+                            remote:InvokeServer(skinName, "copy")
+                            remote:InvokeServer("acquire", skinName, 1)
                         end
                         wait(0.1)
                     end
@@ -168,6 +184,93 @@ function SniperDuels:SetEnhancedStats(enabled)
     else
         self:ResetWeaponStats()
     end
+end
+
+-- Free Currency Generation
+function SniperDuels:GenerateFreeCurrency(amount)
+    amount = amount or 999999
+    
+    pcall(function()
+        -- Method 1: Direct currency manipulation
+        local currencyFolders = {
+            LocalPlayer:FindFirstChild("Currency"),
+            LocalPlayer:FindFirstChild("Coins"),
+            LocalPlayer:FindFirstChild("Money"),
+            LocalPlayer:FindFirstChild("Cash"),
+            LocalPlayer:FindFirstChild("PlayerData")
+        }
+        
+        for _, folder in pairs(currencyFolders) do
+            if folder then
+                -- Look for currency values
+                for _, child in pairs(folder:GetDescendants()) do
+                    if child:IsA("IntValue") or child:IsA("NumberValue") then
+                        local name = child.Name:lower()
+                        if name:find("coin") or name:find("cash") or name:find("money") or name:find("currency") or name:find("credit") then
+                            child.Value = child.Value + amount
+                        end
+                    end
+                end
+                
+                -- If no specific currency values found, create one
+                if folder.Name == "PlayerData" then
+                    local currencyValue = folder:FindFirstChild("Currency") or folder:FindFirstChild("Coins") or folder:FindFirstChild("Money")
+                    if not currencyValue then
+                        currencyValue = Instance.new("IntValue")
+                        currencyValue.Name = "Currency"
+                        currencyValue.Value = amount
+                        currencyValue.Parent = folder
+                    else
+                        currencyValue.Value = currencyValue.Value + amount
+                    end
+                end
+            end
+        end
+        
+        -- Method 2: DataStore manipulation
+        local dataStores = LocalPlayer:FindFirstChild("DataStore") or LocalPlayer:FindFirstChild("DataStores")
+        if dataStores then
+            for _, store in pairs(dataStores:GetChildren()) do
+                if store:IsA("IntValue") or store:IsA("NumberValue") then
+                    local name = store.Name:lower()
+                    if name:find("coin") or name:find("cash") or name:find("money") or name:find("currency") then
+                        store.Value = store.Value + amount
+                    end
+                end
+            end
+        end
+        
+        -- Method 3: Leaderstats manipulation
+        local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
+        if leaderstats then
+            for _, stat in pairs(leaderstats:GetChildren()) do
+                if stat:IsA("IntValue") or stat:IsA("NumberValue") then
+                    local name = stat.Name:lower()
+                    if name:find("coin") or name:find("cash") or name:find("money") or name:find("currency") then
+                        stat.Value = stat.Value + amount
+                    end
+                end
+            end
+        end
+        
+        -- Method 4: Remote event manipulation
+        local remotes = ReplicatedStorage:GetDescendants()
+        for _, remote in pairs(remotes) do
+            if remote:IsA("RemoteEvent") then
+                local remoteName = remote.Name:lower()
+                if remoteName:find("currency") or remoteName:find("coin") or remoteName:find("money") or remoteName:find("earn") or remoteName:find("reward") then
+                    -- Try to trigger currency earning events
+                    remote:FireServer("earn", amount)
+                    remote:FireServer("reward", amount)
+                    remote:FireServer("addCurrency", amount)
+                    remote:FireServer("addCoins", amount)
+                    remote:FireServer("claim", "currency", amount)
+                end
+            end
+        end
+        
+        print("[SniperDuels] Generated " .. amount .. " free currency")
+    end)
 end
 
 -- Boost all weapon stats
