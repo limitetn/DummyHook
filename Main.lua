@@ -165,7 +165,7 @@ local function CreateKeyUI(callback)
                 if isValid then
                     Status.Text = "✓ Success!"
                     Status.TextColor3 = Color3.fromRGB(100, 255, 100)
-                    wait(0.5)
+                    task.wait(0.5)
                     ScreenGui:Destroy()
                     authenticated = true
                     if callback then
@@ -892,4 +892,7 @@ local function LoadMainScript()
 end
 
 -- Initialize
-CreateKeyUI(LoadMainScript)
+-- Use spawn to prevent nil value errors
+spawn(function()
+    CreateKeyUI(LoadMainScript)
+end)

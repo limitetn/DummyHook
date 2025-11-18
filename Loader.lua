@@ -1,53 +1,44 @@
---[[
-    DummyHook Local Loader
-    For local testing without GitHub hosting
-]]
-
--- Fix for static analysis tools
-local readfile = readfile
-local game = game
-
--- This loader is for local testing purposes
--- Replace file paths with your actual GitHub raw URLs when hosting
-
-local function loadScript(path)
-    local content = readfile(path)
-    -- Use load instead of loadstring for Lua 5.4 compatibility
-    return load(content)()
-end
-
--- Try to load from GitHub first, fallback to local files
-local function smartLoad(githubUrl, localPath)
-    local success, result = pcall(function()
-        -- Use load instead of loadstring for Lua 5.4 compatibility
-        return load(game:HttpGet(githubUrl))()
-    end)
-    
-    if success then
-        return result
-    else
-        -- Fallback to local file if available
-        warn("[DummyHook] Failed to load from GitHub, trying local files...")
-        if readfile then
-            return loadScript(localPath)
-        else
-            error("[DummyHook] Cannot load script: No file access!")
-        end
-    end
-end
-
-print("[DummyHook] Starting loader...")
-print("[DummyHook] For best experience, host files on GitHub and use the main loader")
-
--- Load main script
-local mainUrl = "https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua"
-local mainPath = "Main.lua"
+-- DummyHook Loader
+-- This loads the main script properly
 
 local success, err = pcall(function()
-    smartLoad(mainUrl, mainPath)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/limitetn/DummyHook/main/Main.lua"))()
 end)
 
 if not success then
-    warn("[DummyHook] Loader Error: " .. tostring(err))
-    warn("[DummyHook] Please host the script on GitHub for proper functionality")
+    warn("[DummyHook] Failed to load: " .. tostring(err))
+    
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "DummyHook_Error"
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.Parent = game:GetService("CoreGui")
+    
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 400, 0, 150)
+    frame.Position = UDim2.new(0.5, -200, 0.5, -75)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Position = UDim2.new(0, 0, 0, 10)
+    title.BackgroundTransparency = 1
+    title.Text = "DummyHook - Load Error"
+    title.TextColor3 = Color3.fromRGB(255, 100, 100)
+    title.TextSize = 18
+    title.Font = Enum.Font.GothamBold
+    title.Parent = frame
+    
+    local message = Instance.new("TextLabel")
+    message.Size = UDim2.new(1, -20, 0, 80)
+    message.Position = UDim2.new(0, 10, 0, 50)
+    message.BackgroundTransparency = 1
+    message.Text = "Failed to load DummyHook.\nCheck your internet connection\nand try again."
+    message.TextColor3 = Color3.fromRGB(200, 200, 200)
+    message.TextSize = 14
+    message.Font = Enum.Font.Gotham
+    message.TextWrapped = true
+    message.TextYAlignment = Enum.TextYAlignment.Top
+    message.Parent = frame
 end
