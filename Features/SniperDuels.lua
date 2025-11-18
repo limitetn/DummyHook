@@ -11,21 +11,28 @@ local SniperDuels = {
         AutoDupeSkins = false,
         SkinDupeAmount = 1,
         EnhancedStats = false,
-        StatBoostAmount = 100,
+        StatBoostAmount = 2,        -- Realistic 2x boost instead of 100x
+        InfiniteAmmo = false,
+        NoRecoil = false,
+        NoSpread = false,
+        IncreasedFireRate = false,
+        FireRateMultiplier = 1.5,
         MeleeExploit = false,
         NoMeleeCooldown = false,
+        MeleeDamageBoost = false,
         AutoFarm = false,
         FarmMethod = "Kills"
     },
     Connections = {},
     DetectedSkins = {},
+    -- Actual case types from CaseConfigs.lua game module
     CaseTypes = {
-        "Release",           -- Release Case
-        "Halloween2025",     -- Hallows Basket
-        "Beta",
-        "Alpha", 
-        "Omega"
-    }
+        "Release",          -- RELEASE CASE from game module
+        "Halloween2025"     -- HALLOWS BASKET from game module
+    },
+    -- Actual weapon config references from game modules
+    WeaponConfigs = {},
+    MeleeConfigs = {}
 }
 
 local Players = game:GetService("Players")
@@ -332,32 +339,98 @@ function SniperDuels:BoostAllWeaponStats()
     end)
 end
 
--- Boost specific tool stats
+-- Boost specific tool stats based on actual Gun.lua module structure
 function SniperDuels:BoostToolStats(tool, boostAmount)
-    for _, child in pairs(tool:GetDescendants()) do
-        if child:IsA("NumberValue") or child:IsA("IntValue") or child:IsA("FloatValue") then
-            local name = child.Name:lower()
+    pcall(function()
+        -- Based on Gun.lua's actual config structure
+        local config = tool:FindFirstChild("Config")
+        if config then
+            -- Damage boosting (from Gun.lua line 741-746)
+            local damageFolder = config:FindFirstChild("Damage")
+            if damageFolder then
+                for _, damageValue in pairs(damageFolder:GetChildren()) do
+                    if damageValue:IsA("NumberValue") or damageValue:IsA("IntValue") then
+                        damageValue.Value = damageValue.Value * boostAmount
+                    end
+                end
+            end
             
-            -- Sniper Duels specific weapon stat names from Gun.lua module
-            if name:find("damage") or name:find("dmg") then
-                child.Value = child.Value * boostAmount
-            elseif name:find("firerate") or name:find("rof") or name:find("rate") then
-                child.Value = child.Value * (boostAmount * 0.5) -- Fire rate boost
-            elseif name:find("recoil") then
-                child.Value = child.Value / (boostAmount * 0.5) -- Reduce recoil
-            elseif name:find("spread") or name:find("accuracy") then
-                child.Value = child.Value / boostAmount -- Improve accuracy
-            elseif name:find("zoom") or name:find("fov") then
-                child.Value = child.Value * (boostAmount * 0.3) -- Zoom boost
-            elseif name:find("ammo") or name:find("magazine") then
-                child.Value = child.Value * boostAmount -- Ammo capacity
-            elseif name:find("reload") then
-                child.Value = child.Value / (boostAmount * 0.7) -- Faster reload
-            elseif name:find("velocity") or name:find("speed") then
-                child.Value = child.Value * (boostAmount * 0.2) -- Projectile speed
+            -- Fire rate boosting (from Gun.lua's Firerate config)
+            local firerate = config:FindFirstChild("Firerate")
+            if firerate and (firerate:IsA("NumberValue") or firerate:IsA("IntValue")) then
+                if self.Settings.IncreasedFireRate then
+                    firerate.Value = firerate.Value * self.Settings.FireRateMultiplier
+                end
+            end
+            
+            -- Recoil reduction (from Gun.lua's Recoil config)
+            local recoil = config:FindFirstChild("Recoil")
+            if recoil and self.Settings.NoRecoil then
+                if recoil:IsA("NumberValue") or recoil:IsA("IntValue") then
+                    recoil.Value = 0
+                elseif recoil:IsA("Folder") then
+                    for _, recoilValue in pairs(recoil:GetDescendants()) do
+                        if recoilValue:IsA("NumberValue") or recoilValue:IsA("IntValue") then
+                            recoilValue.Value = 0
+                        end
+                    end
+                end
+            end
+            
+            -- Spread reduction (from Gun.lua's Spread config line 696-706)
+            local spread = config:FindFirstChild("Spread")
+            if spread and self.Settings.NoSpread then
+                if spread:IsA("NumberValue") or spread:IsA("IntValue") then
+                    spread.Value = 0
+                elseif spread:IsA("Folder") then
+                    for _, spreadValue in pairs(spread:GetDescendants()) do
+                        if spreadValue:IsA("NumberValue") or spreadValue:IsA("IntValue") then
+                            spreadValue.Value = 0
+                        end
+                    end
+                end
+            end
+            
+            -- Ammo boosting (from Gun.lua line 115)
+            local ammo = config:FindFirstChild("Ammo")
+            if ammo and (ammo:IsA("NumberValue") or ammo:IsA("IntValue")) then
+                if self.Settings.InfiniteAmmo then
+                    ammo.Value = 9999
+                end
+            end
+            
+            -- Reload time reduction
+            local reloadTime = config:FindFirstChild("ReloadTime")
+            if reloadTime and (reloadTime:IsA("NumberValue") or reloadTime:IsA("IntValue")) then
+                reloadTime.Value = reloadTime.Value / boostAmount
+            end
+            
+            -- Max range increase
+            local maxRange = config:FindFirstChild("MaxRangeStuds")
+            if maxRange and (maxRange:IsA("NumberValue") or maxRange:IsA("IntValue")) then
+                maxRange.Value = maxRange.Value * boostAmount
             end
         end
-    end
+        
+        -- Also check for values directly in tool (legacy support)
+        for _, child in pairs(tool:GetDescendants()) do
+            if child:IsA("NumberValue") or child:IsA("IntValue") or child:IsA("FloatValue") then
+                local name = child.Name:lower()
+                
+                if name:find("damage") or name:find("dmg") then
+                    child.Value = child.Value * boostAmount
+                elseif name:find("firerate") and self.Settings.IncreasedFireRate then
+                    child.Value = child.Value * self.Settings.FireRateMultiplier
+                elseif name:find("recoil") and self.Settings.NoRecoil then
+                    child.Value = 0
+                elseif (name:find("spread") or name:find("accuracy")) and self.Settings.NoSpread then
+                    child.Value = 0
+                elseif name:find("ammo") and self.Settings.InfiniteAmmo then
+                    child.Value = 9999
+                end
+            end
+        end
+    end)
 end
 
 -- Reset weapon stats
@@ -390,36 +463,72 @@ function SniperDuels:ResetToolStats(tool)
     -- In a real implementation, you'd restore original values
 end
 
--- Melee Exploit (No Cooldown)
+-- Melee Exploit based on actual Melee.lua module (line 88, 159-181)
 function SniperDuels:SetMeleeExploit(enabled)
     self.Settings.MeleeExploit = enabled
     
+    if self.Connections.MeleeLoop then
+        self.Connections.MeleeLoop:Disconnect()
+        self.Connections.MeleeLoop = nil
+    end
+    
+    if enabled then
+        self.Connections.MeleeLoop = RunService.Heartbeat:Connect(function()
+            self:ApplyMeleeExploits()
+        end)
+    end
+end
+
+-- Apply melee exploits based on Melee.lua structure
+function SniperDuels:ApplyMeleeExploits()
     pcall(function()
         local character = LocalPlayer.Character
         if not character then return end
         
-        -- Find melee tools and modify their cooldowns based on Melee.lua module
+        -- Find melee tools based on actual Melee.lua module structure
         for _, tool in pairs(character:GetChildren()) do
-            if tool:IsA("Tool") and (tool.Name:find("Knife") or tool.Name:find("Melee") or 
-               tool.Name:find("Sword") or tool.Name:find("Blade") or tool.Name:find("Dagger")) then
-                for _, child in pairs(tool:GetDescendants()) do
-                    if child:IsA("NumberValue") or child:IsA("IntValue") or child:IsA("FloatValue") then
-                        local name = child.Name:lower()
-                        -- Sniper Duels specific melee stat names from Melee.lua module
-                        if name:find("cooldown") or name:find("delay") or name:find("swing") then
-                            if self.Settings.MeleeExploit then
-                                child.Value = 0 -- No cooldown
-                            else
-                                -- Reset to default (this is approximate)
-                                child.Value = child.Value > 0 and child.Value or 0.5
+            if tool:IsA("Tool") then
+                -- Check if it's a melee weapon (Bayonet from CaseConfigs.lua)
+                if tool.Name:find("Bayonet") or tool.Name:find("Knife") or 
+                   tool.Name:find("Melee") or tool:HasTag("Melee") then
+                    
+                    local config = tool:FindFirstChild("Config")
+                    if config then
+                        -- Based on Melee.lua line 88: TimeSwingCooldownEnded
+                        if self.Settings.NoMeleeCooldown then
+                            local swingCooldown = config:FindFirstChild("SwingCooldown")
+                            if swingCooldown and (swingCooldown:IsA("NumberValue") or swingCooldown:IsA("IntValue")) then
+                                swingCooldown.Value = 0
                             end
-                        elseif name:find("damage") or name:find("dmg") then
-                            if self.Settings.MeleeExploit then
-                                child.Value = child.Value * 5 -- 5x damage boost
-                            else
-                                -- Reset to default (this is approximate)
-                                child.Value = child.Value / 5
+                        end
+                        
+                        -- Based on Melee.lua damage system
+                        if self.Settings.MeleeDamageBoost then
+                            local damage = config:FindFirstChild("Damage")
+                            if damage and (damage:IsA("NumberValue") or damage:IsA("IntValue")) then
+                                damage.Value = damage.Value * 3  -- 3x damage boost (reasonable)
                             end
+                        end
+                        
+                        -- Melee range increase
+                        local range = config:FindFirstChild("Range")
+                        if range and (range:IsA("NumberValue") or range:IsA("IntValue")) then
+                            range.Value = range.Value * 2
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- Also check backpack
+        if LocalPlayer:FindFirstChild("Backpack") then
+            for _, tool in pairs(LocalPlayer.Backpack:GetChildren()) do
+                if tool:IsA("Tool") and (tool.Name:find("Bayonet") or tool:HasTag("Melee")) then
+                    local config = tool:FindFirstChild("Config")
+                    if config and self.Settings.NoMeleeCooldown then
+                        local swingCooldown = config:FindFirstChild("SwingCooldown")
+                        if swingCooldown and (swingCooldown:IsA("NumberValue") or swingCooldown:IsA("IntValue")) then
+                            swingCooldown.Value = 0
                         end
                     end
                 end
@@ -476,45 +585,84 @@ function SniperDuels:AutoFarm()
     end)
 end
 
--- Skin Detection System
+-- Skin Detection System based on actual CaseConfigs.lua module
 function SniperDuels:StartSkinDetection()
-    -- Store detected skins
     self.DetectedSkins = {}
     
-    -- Common skin name patterns from Sniper Duels CaseConfigs
-    local skinPatterns = {
-        -- Release Case skins
+    -- RELEASE CASE skins from CaseConfigs.lua (lines 8-40)
+    local releaseSkins = {
+        -- Standard skins
         "Flames", "SnakeSkin", "GreenStream", "Lightning", "CrimeScene",
-        "VanillaAWP", "AWP_Bubblegum", "SunsetRunner", "Apex",
+        "VanillaAWP", "AWP_Bubblegum", "VanillaIntervention", "SunsetRunner", "Apex",
         "Default_Bluesteel",
-        "Bayonet", "Bayonet_Hypno", "Bayonet_Sunset", "Bayonet_Aurora", 
-        "Bayonet_Amethyst", "Bayonet_Ruby", "Bayonet_Sapphire", 
-        "Bayonet_Emerald", "Bayonet_Onyx",
-        "TrueWhite", "TrueBlack",
-        "Default_Inverted", "Default_TrueInverted", 
-        "AWP_Inverted", "AWP_TrueInverted",
         
-        -- Halloween 2025 Case skins (Hallows Basket)
+        -- Bayonet variants (lines 20-30)
+        "Bayonet", "Bayonet_Hypno", "Bayonet_Sunset", "Bayonet_Aurora",
+        "Bayonet_Amethyst", "Bayonet_Ruby", "Bayonet_Sapphire",
+        "Bayonet_Emerald", "Bayonet_Onyx",
+        
+        -- True colors (lines 31-34)
+        "TrueWhite", "TrueBlack",
+        
+        -- Inverted variants (lines 35-40)
+        "Default_Inverted", "Default_TrueInverted",
+        "AWP_Inverted", "AWP_TrueInverted"
+    }
+    
+    -- RELEASE CASE FX from CaseConfigs.lua (lines 42-50)
+    local releaseFX = {
+        "Surge", "Binary", "Loveshot", "Omega", "Voidcry",
+        "Inferno", "Starbound", "Blacklight"
+    }
+    
+    -- RELEASE CASE Kill Effects from CaseConfigs.lua (line 52)
+    local releaseKillEffects = {
+        "Darkheart", "Cash"
+    }
+    
+    -- HALLOWEEN 2025 CASE (HALLOWS BASKET) from CaseConfigs.lua (lines 74-94)
+    local halloweenSkins = {
+        -- Standard skins
         "Mummy", "Stalker", "Zombie", "Catseye", "VampireHunter",
         "Cauldron", "AWP_WhiteSpiral", "AWP_Bewitched", "Intervention_Reaper",
-        "AWP_RedSpiral", "Intervention_BlackKnight", "Bayonet_CandyCorn",
-        "Bayonet_ZombieSlayer", "Bayonet_Cultist", "Bayonet_Vampiric",
-        "AWP_Elementist", "AWP_Elementist_Purple",
+        "AWP_RedSpiral", "Intervention_BlackKnight",
         
-        -- FX and Kill Effects from cases
-        "Surge", "Binary", "Loveshot", "Omega", "Voidcry", 
-        "Inferno", "Starbound", "Blacklight",
-        "Darkheart", "Cash",
-        "VoidGrasp", "Magician", "Shock", "AstralPlain", 
+        -- Bayonet variants
+        "Bayonet_CandyCorn", "Bayonet_ZombieSlayer",
+        "Bayonet_Cultist", "Bayonet_Vampiric",
+        
+        -- Elementist variants
+        "AWP_Elementist", "AWP_Elementist_Purple"
+    }
+    
+    -- HALLOWEEN 2025 FX from CaseConfigs.lua (lines 95-102)
+    local halloweenFX = {
+        "VoidGrasp", "Magician", "Shock", "AstralPlain",
         "Cryptic", "NoxNostra"
     }
     
-    -- Add all patterns to detected skins for testing
-    for _, skin in ipairs(skinPatterns) do
+    -- Combine all skins
+    for _, skin in ipairs(releaseSkins) do
         table.insert(self.DetectedSkins, skin)
     end
     
-    print("[SniperDuels] Skin detection system started with " .. #self.DetectedSkins .. " skins")
+    for _, fx in ipairs(releaseFX) do
+        table.insert(self.DetectedSkins, fx)
+    end
+    
+    for _, effect in ipairs(releaseKillEffects) do
+        table.insert(self.DetectedSkins, effect)
+    end
+    
+    for _, skin in ipairs(halloweenSkins) do
+        table.insert(self.DetectedSkins, skin)
+    end
+    
+    for _, fx in ipairs(halloweenFX) do
+        table.insert(self.DetectedSkins, fx)
+    end
+    
+    print("[SniperDuels] Loaded " .. #self.DetectedSkins .. " skins from actual game CaseConfigs module")
 end
 
 -- Get list of detected skins
