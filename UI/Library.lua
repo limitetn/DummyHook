@@ -190,85 +190,7 @@ function Library:CreateWindow(config)
         end
     end)
     
-    -- Enhanced animated particles with multiple colors and sizes
-    local Particles = {}
-    for i = 1, 50 do
-        local colors = {
-            Color3.fromRGB(130, 195, 65),  -- Green
-            Color3.fromRGB(90, 180, 220),  -- Blue
-            Color3.fromRGB(180, 90, 220),  -- Purple
-            Color3.fromRGB(220, 90, 90),   -- Red
-            Color3.fromRGB(220, 180, 90)   -- Yellow
-        }
-        
-        local particle = CreateElement("Frame", {
-            Name = "Particle" .. i,
-            Size = UDim2.new(0, math.random(2, 10), 0, math.random(2, 10)),
-            Position = UDim2.new(math.random(0, 100) / 100, 0, math.random(0, 100) / 100, 0),
-            BackgroundColor3 = colors[math.random(1, #colors)],
-            BorderSizePixel = 0,
-            BackgroundTransparency = 0.7,
-            Parent = IntroOverlay
-        })
-        
-        local particleCorner = CreateElement("UICorner", {
-            CornerRadius = UDim.new(1, 0),
-            Parent = particle
-        })
-        
-        -- Add glow effect to particles
-        local particleGlow = CreateElement("Frame", {
-            Size = UDim2.new(1, 8, 1, 8),
-            Position = UDim2.new(0.5, -4, 0.5, -4),
-            BackgroundColor3 = particle.BackgroundColor3,
-            BorderSizePixel = 0,
-            BackgroundTransparency = 0.9,
-            Parent = particle
-        })
-        
-        local glowCorner = CreateElement("UICorner", {
-            CornerRadius = UDim.new(1, 0),
-            Parent = particleGlow
-        })
-        
-        table.insert(Particles, {Main = particle, Glow = particleGlow, SpeedX = (math.random(-15, 15) / 300), SpeedY = (math.random(-15, 15) / 300)})
-    end
-    
-    -- Animate particles with more complex movement
-    spawn(function()
-        while IntroOverlay and IntroOverlay.Parent do
-            for _, particleData in pairs(Particles) do
-                local particle = particleData.Main
-                local glow = particleData.Glow
-                if particle and particle.Parent and glow and glow.Parent then
-                    local newX = particle.Position.X.Scale + particleData.SpeedX
-                    local newY = particle.Position.Y.Scale + particleData.SpeedY
-                    
-                    -- Bounce off edges
-                    if newX <= 0 or newX >= 1 then
-                        particleData.SpeedX = -particleData.SpeedX
-                        newX = math.clamp(newX, 0, 1)
-                    end
-                    
-                    if newY <= 0 or newY >= 1 then
-                        particleData.SpeedY = -particleData.SpeedY
-                        newY = math.clamp(newY, 0, 1)
-                    end
-                    
-                    particle.Position = UDim2.new(newX, particle.Position.X.Offset, newY, particle.Position.Y.Offset)
-                    
-                    -- Pulsing effect with color cycling
-                    local pulse = math.sin(tick() * 3 + particleData.SpeedX * 10) * 0.1
-                    particle.BackgroundTransparency = 0.5 + pulse
-                    glow.BackgroundTransparency = 0.7 + pulse
-                    
-                    -- Rotate particles
-                    particle.Rotation = (particle.Rotation + 1) % 360
-                end
-            end
-            wait(0.03)
-        end
-    end)
+    -- No particles for cleaner intro animation
     
     -- Main logo container with enhanced glow effect
     local LogoContainer = CreateElement("Frame", {
@@ -662,24 +584,7 @@ function Library:CreateWindow(config)
                 LoadingBar.Size = UDim2.new(scale, 0, 1, 0)
             end
             
-            -- Fade out, scale down, and rotate particles
-            for _, particleData in pairs(Particles) do
-                local particle = particleData.Main
-                local glow = particleData.Glow
-                if particle and particle.Parent then
-                    particle.BackgroundTransparency = progress
-                    -- Scale down and rotate
-                    local scale = 1 - progress
-                    particle.Size = UDim2.new(0, particle.Size.X.Offset * scale, 0, particle.Size.Y.Offset * scale)
-                    particle.Rotation = progress * 720
-                end
-                if glow and glow.Parent then
-                    glow.BackgroundTransparency = 0.7 + progress * 0.3
-                    -- Scale down
-                    local scale = 1 - progress
-                    glow.Size = UDim2.new(1, 8 * scale, 1, 8 * scale)
-                end
-            end
+            -- No particles to animate
             
             wait(0.01)
         end
@@ -1198,7 +1103,7 @@ function Library:CreateWindow(config)
             end
             
             -- Add Slider
-            function Section:AddSlider(name, min, max, default, callback)
+            function Section:AddSlider(name, default, min, max, step, callback)
                 local Slider = {Value = default}
                 
                 local SliderFrame = CreateElement("Frame", {
@@ -1278,7 +1183,14 @@ function Library:CreateWindow(config)
                 SliderButton.MouseMoved:Connect(function(x, y)
                     if dragging then
                         local percentage = math.clamp((x - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
-                        local value = math.floor(min + (max - min) * percentage)
+                        local value = min + (max - min) * percentage
+                        
+                        -- Round to appropriate decimal places based on step
+                        if step and step > 0 then
+                            value = math.floor(value / step + 0.5) * step
+                        else
+                            value = math.floor(value + 0.5)
+                        end
                         
                         Slider.Value = value
                         ValueLabel.Text = tostring(value)
