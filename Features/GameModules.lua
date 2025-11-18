@@ -275,6 +275,28 @@ function GameModules:SetCoinMultiplier(enabled)
     
     -- This would typically hook into coin gain events
     -- Implementation would depend on the game's economy system
+    if enabled then
+        self:HookCoinGain()
+    else
+        self:UnhookCoinGain()
+    end
+end
+
+function GameModules:HookCoinGain()
+    -- Try to hook into coin gain events
+    pcall(function()
+        local remotes = ReplicatedStorage:GetDescendants()
+        for _, remote in pairs(remotes) do
+            if remote:IsA("RemoteEvent") and remote.Name:lower():find("coin") then
+                -- Store original connection if needed
+                -- Apply multiplier to coin gains
+            end
+        end
+    end)
+end
+
+function GameModules:UnhookCoinGain()
+    -- Remove coin gain hooks
 end
 
 -- Premium Currency Multiplier
@@ -283,6 +305,28 @@ function GameModules:SetPremiumCurrencyMultiplier(enabled)
     
     -- This would typically hook into premium currency gain events
     -- Implementation would depend on the game's premium currency system
+    if enabled then
+        self:HookPremiumCurrencyGain()
+    else
+        self:UnhookPremiumCurrencyGain()
+    end
+end
+
+function GameModules:HookPremiumCurrencyGain()
+    -- Try to hook into premium currency gain events
+    pcall(function()
+        local remotes = ReplicatedStorage:GetDescendants()
+        for _, remote in pairs(remotes) do
+            if remote:IsA("RemoteEvent") and (remote.Name:lower():find("premium") or remote.Name:lower():find("currency")) then
+                -- Store original connection if needed
+                -- Apply multiplier to premium currency gains
+            end
+        end
+    end)
+end
+
+function GameModules:UnhookPremiumCurrencyGain()
+    -- Remove premium currency gain hooks
 end
 
 -- Cleanup

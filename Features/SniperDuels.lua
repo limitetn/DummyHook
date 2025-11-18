@@ -68,6 +68,7 @@ local SniperDuels = {
         CoinMultiplierAmount = 2,
         PremiumCurrencyMultiplier = false,
         PremiumCurrencyMultiplierAmount = 2,
+        InfiniteMoney = false, -- Add this new setting
     },
     Connections = {},
     DetectedSkins = {},
@@ -349,7 +350,7 @@ function SniperDuels:GenerateFreeCurrency(amount)
                 if (remoteName:find("currency") and (remoteName:find("add") or remoteName:find("give") or remoteName:find("reward"))) or 
                    (remoteName:find("coin") and remoteName:find("claim")) or 
                    (remoteName:find("store") and remoteName:find("purchase")) or 
-                   remoteName:find("economy") or remoteName:find("wallet") then
+                   remoteName:find("economy") or remoteName:find("wallet") or remoteName:find("playerdata") then
                     
                     -- Sniper Duels specific remote calls
                     remote:FireServer("addCurrency", amount)
@@ -360,7 +361,43 @@ function SniperDuels:GenerateFreeCurrency(amount)
                     remote:FireServer("increase", "balance", amount)
                     remote:FireServer("update", "currency", amount)
                     remote:FireServer("earn", amount)
+                    -- Try to directly set currency values
+                    remote:FireServer("set", "currency", amount)
+                    remote:FireServer("setCurrency", amount)
+                    remote:FireServer("add", "currency", amount)
                 end
+            elseif remote:IsA("RemoteFunction") then
+                local remoteName = remote.Name:lower()
+                if remoteName:find("currency") or remoteName:find("economy") or remoteName:find("playerdata") then
+                    -- Try to invoke functions to add currency
+                    remote:InvokeServer("addCurrency", amount)
+                    remote:InvokeServer("addCoins", amount)
+                    remote:InvokeServer("setCurrency", amount)
+                end
+            end
+        end
+        
+        -- Method 4: Try to find and modify the actual Data object
+        local playerData = LocalPlayer:FindFirstChild("Data")
+        if playerData then
+            local currencyValue = playerData:FindFirstChild("Currency")
+            if currencyValue and (currencyValue:IsA("IntValue") or currencyValue:IsA("NumberValue")) then
+                currencyValue.Value = currencyValue.Value + amount
+            else
+                -- Create currency value if it doesn't exist
+                local newCurrency = Instance.new("IntValue")
+                newCurrency.Name = "Currency"
+                newCurrency.Value = amount
+                newCurrency.Parent = playerData
+            end
+        end
+        
+        -- Method 5: Try to find PlayerData object with currency
+        local playerData2 = LocalPlayer:FindFirstChild("PlayerData")
+        if playerData2 then
+            local currencyValue = playerData2:FindFirstChild("Currency")
+            if currencyValue and (currencyValue:IsA("IntValue") or currencyValue:IsA("NumberValue")) then
+                currencyValue.Value = currencyValue.Value + amount
             end
         end
         
@@ -1042,6 +1079,109 @@ function SniperDuels:SetPremiumCurrencyMultiplierAmount(value)
     if GameModules then
         GameModules.Settings.PremiumCurrencyMultiplierAmount = value
     end
+end
+
+function SniperDuels:SetInfiniteMoneyValue(value)
+    self.Settings.InfiniteMoney = value
+end
+
+-- Infinite Money Exploit (keeps currency at high levels)
+function SniperDuels:SetInfiniteMoney(enabled)
+    self.Settings.InfiniteMoney = enabled
+    
+    if self.Connections.InfiniteMoney then
+        self.Connections.InfiniteMoney:Disconnect()
+        self.Connections.InfiniteMoney = nil
+    end
+    
+    if enabled then
+        self.Connections.InfiniteMoney = RunService.Heartbeat:Connect(function()
+            self:KeepCurrencyHigh()
+        end)
+    end
+end
+
+function SniperDuels:KeepCurrencyHigh()
+    if not self.Settings.InfiniteMoney then return end
+    
+    pcall(function()
+        -- Method 1: Direct currency manipulation (Sniper Duels specific)
+        local currencyFolders = {
+            LocalPlayer:FindFirstChild("Currency"),
+            LocalPlayer:FindFirstChild("Coins"),
+            LocalPlayer:FindFirstChild("Money"),
+            LocalPlayer:FindFirstChild("Cash"),
+            LocalPlayer:FindFirstChild("PlayerData"),
+            LocalPlayer:FindFirstChild("Data"),
+            LocalPlayer:FindFirstChild("Stats")
+        }
+        
+        for _, folder in pairs(currencyFolders) do
+            if folder then
+                -- Look for currency values with Sniper Duels specific names
+                for _, child in pairs(folder:GetDescendants()) do
+                    if child:IsA("IntValue") or child:IsA("NumberValue") then
+                        local name = child.Name:lower()
+                        if name:find("coin") or name:find("cash") or name:find("money") or 
+                           name:find("currency") or name:find("credit") or name:find("premium") or 
+                           name:find("balance") or name:find("funds") then
+                            if child.Value < 999999 then
+                                child.Value = 999999999
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- Method 2: DataStore manipulation (Sniper Duels specific)
+        local dataStores = LocalPlayer:FindFirstChild("DataStore") or LocalPlayer:FindFirstChild("DataStores") or 
+                          LocalPlayer:FindFirstChild("PlayerData") or LocalPlayer:FindFirstChild("UserData")
+        if dataStores then
+            for _, store in pairs(dataStores:GetChildren()) do
+                if store:IsA("IntValue") or store:IsA("NumberValue") then
+                    local storeName = store.Name:lower()
+                    if storeName:find("currency") or storeName:find("coin") or storeName:find("money") or 
+                       storeName:find("cash") or storeName:find("balance") then
+                        if store.Value < 999999 then
+                            store.Value = 999999999
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- Method 3: Remote event manipulation (Sniper Duels specific methods)
+        local remotes = ReplicatedStorage:GetDescendants()
+        
+        for _, remote in pairs(remotes) do
+            if remote:IsA("RemoteEvent") then
+                local remoteName = remote.Name:lower()
+                -- Sniper Duels specific remote event names
+                if (remoteName:find("currency") and (remoteName:find("add") or remoteName:find("give") or remoteName:find("reward"))) or 
+                   (remoteName:find("coin") and remoteName:find("claim")) or 
+                   (remoteName:find("store") and remoteName:find("purchase")) or 
+                   remoteName:find("economy") or remoteName:find("wallet") then
+                    
+                    -- Sniper Duels specific remote calls to maintain high currency
+                    remote:FireServer("addCurrency", 100000)
+                    remote:FireServer("addCoins", 100000)
+                    remote:FireServer("reward", 100000)
+                end
+            end
+        end
+        
+        -- Method 4: Try to find and maintain the actual Data object
+        local playerData = LocalPlayer:FindFirstChild("Data")
+        if playerData then
+            local currencyValue = playerData:FindFirstChild("Currency")
+            if currencyValue and (currencyValue:IsA("IntValue") or currencyValue:IsA("NumberValue")) then
+                if currencyValue.Value < 999999 then
+                    currencyValue.Value = 999999999
+                end
+            end
+        end
+    end)
 end
 
 -- Initialize

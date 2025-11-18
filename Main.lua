@@ -1165,6 +1165,16 @@ local function LoadMainScript()
         end
     end)
     
+    -- Infinite Money Toggle
+    SniperDuelsSpecializedSection:AddToggle("Infinite Money", false, function(state)
+        if SniperDuels then
+            SniperDuels:SetInfiniteMoney(state)
+            if Notifications then
+                Notifications:Success("Sniper Duels", "Infinite money " .. (state and "enabled" or "disabled"), 3)
+            end
+        end
+    end)
+
     -- Auto Dupe Skins
     SniperDuelsSpecializedSection:AddToggle("Auto Dupe Skins", false, function(state)
         if SniperDuels then
