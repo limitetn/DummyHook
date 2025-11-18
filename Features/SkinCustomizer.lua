@@ -354,6 +354,79 @@ SkinCustomizer.OutfitPresets = {
         Color = Color3.fromRGB(220, 220, 220),
         Material = Enum.Material.DiamondPlate,
         Reflectance = 0.2
+    },
+    
+    -- Sniper Duels specific presets
+    ["Flames"] = {
+        Color = Color3.fromRGB(255, 100, 0),
+        Material = Enum.Material.Neon,
+        Reflectance = 0.1
+    },
+    
+    ["SnakeSkin"] = {
+        Color = Color3.fromRGB(0, 200, 100),
+        Material = Enum.Material.SmoothPlastic,
+        Reflectance = 0.2
+    },
+    
+    ["GreenStream"] = {
+        Color = Color3.fromRGB(0, 255, 150),
+        Material = Enum.Material.Neon,
+        Reflectance = 0
+    },
+    
+    ["Lightning"] = {
+        Color = Color3.fromRGB(100, 200, 255),
+        Material = Enum.Material.ForceField,
+        Reflectance = 0.3
+    },
+    
+    ["CrimeScene"] = {
+        Color = Color3.fromRGB(255, 0, 0),
+        Material = Enum.Material.Neon,
+        Reflectance = 0.1
+    },
+    
+    ["VanillaAWP"] = {
+        Color = Color3.fromRGB(255, 255, 255),
+        Material = Enum.Material.SmoothPlastic,
+        Reflectance = 0
+    },
+    
+    ["AWP_Bubblegum"] = {
+        Color = Color3.fromRGB(255, 150, 200),
+        Material = Enum.Material.Neon,
+        Reflectance = 0
+    },
+    
+    ["SunsetRunner"] = {
+        Color = Color3.fromRGB(255, 150, 0),
+        Material = Enum.Material.Neon,
+        Reflectance = 0.1
+    },
+    
+    ["Apex"] = {
+        Color = Color3.fromRGB(150, 50, 255),
+        Material = Enum.Material.ForceField,
+        Reflectance = 0.2
+    },
+    
+    ["Mummy"] = {
+        Color = Color3.fromRGB(200, 180, 150),
+        Material = Enum.Material.SmoothPlastic,
+        Reflectance = 0.1
+    },
+    
+    ["Stalker"] = {
+        Color = Color3.fromRGB(50, 50, 50),
+        Material = Enum.Material.Neon,
+        Reflectance = 0
+    },
+    
+    ["Zombie"] = {
+        Color = Color3.fromRGB(0, 150, 0),
+        Material = Enum.Material.Neon,
+        Reflectance = 0
     }
 }
 

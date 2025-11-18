@@ -394,7 +394,8 @@ function loadMainScript()
     local Notifications = loadModule("Features/Notifications.lua")
     local AdvancedCheats = loadModule("Features/AdvancedCheats.lua")
     local KeyManager = loadModule("Features/KeyManager.lua")
-    
+    local SniperDuels = loadModule("Features/SniperDuels.lua")
+
     -- Check if UI Library loaded successfully
     if not Library then
         warn("[DummyHook] Failed to load UI Library. Aborting.")
@@ -402,14 +403,19 @@ function loadMainScript()
     end
     
     -- Check if all modules loaded successfully
-    if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats or not KeyManager then
+    if not ESP or not Aimbot or not Crosshair or not Misc or not GameExploits or not PlayerManager or not CharCustomizer or not ThemeManager or not ConfigManager or not VisualEffects or not SkinCustomizer or not Notifications or not AdvancedCheats or not KeyManager or not SniperDuels then
         warn("[DummyHook] Failed to load one or more modules. Aborting.")
         return
     end
     
     -- Initialize Game Exploits
     GameExploits:Initialize()
-    
+
+    -- Initialize Sniper Duels Module
+    if SniperDuels then
+        SniperDuels:Initialize()
+    end
+
     -- Initialize Key Manager
     if KeyManager then
         KeyManager:Initialize()
@@ -769,10 +775,19 @@ function loadMainScript()
     SkinSection:AddSlider("Body Scale", 0.1, 5, 1, function(value)
         SkinCustomizer:SetCharacterScale(SkinCustomizer.Settings.HeadScale, value)
     end)
-    SkinSection:AddDropdown("Outfit Preset", {"Default", "Neon", "Glass", "ForceField", "Wood", "Metal", "DiamondPlate"}, "Default", function(value)
+
+    -- Updated Outfit Preset dropdown with Sniper Duels skins
+    local outfitPresets = {
+        "Default", "Neon", "Glass", "ForceField", "Wood", "Metal", "DiamondPlate",
+        "Flames", "SnakeSkin", "GreenStream", "Lightning", "CrimeScene",
+        "VanillaAWP", "AWP_Bubblegum", "SunsetRunner", "Apex",
+        "Mummy", "Stalker", "Zombie"
+    }
+
+    SkinSection:AddDropdown("Outfit Preset", outfitPresets, "Default", function(value)
         SkinCustomizer:SetOutfitPreset(value)
     end)
-    
+
     local KeybindsSection = MiscTab:CreateSection("Keybinds")
     KeybindsSection:AddButton("Set Aimbot Key", function()
         Notifications:Info("Keybind Setup", "Press any key to set as Aimbot key", 3)
@@ -892,7 +907,71 @@ function loadMainScript()
     SniperDuelsSection:AddToggle("Instant Kill", false, function(value)
         GameExploits:SetInstantKill(value)
     end)
-    
+
+    -- Enhanced Sniper Duels Features
+    local EnhancedSniperSection = ExploitsTab:CreateSection("Enhanced Sniper Duels")
+    EnhancedSniperSection:AddButton("Open Release Case (Free)", function()
+        GameExploits:OpenCaseFree("Release")
+        Notifications:Info("Case Opening", "Attempting to open Release Case for free...", 3)
+    end)
+    EnhancedSniperSection:AddButton("Open Beta Case (Free)", function()
+        GameExploits:OpenCaseFree("Beta")
+        Notifications:Info("Case Opening", "Attempting to open Beta Case for free...", 3)
+    end)
+    EnhancedSniperSection:AddButton("Open Alpha Case (Free)", function()
+        GameExploits:OpenCaseFree("Alpha")
+        Notifications:Info("Case Opening", "Attempting to open Alpha Case for free...", 3)
+    end)
+    EnhancedSniperSection:AddButton("Open Omega Case (Free)", function()
+        GameExploits:OpenCaseFree("Omega")
+        Notifications:Info("Case Opening", "Attempting to open Omega Case for free...", 3)
+    end)
+
+    -- Weapon Stats Modification
+    local weaponStats = {"Damage", "FireRate", "Recoil", "Accuracy", "Range", "ReloadTime"}
+    local selectedStat = "Damage"
+    local statValue = 100
+
+    local WeaponModSection = ExploitsTab:CreateSection("Weapon Stats Modifier")
+    WeaponModSection:AddDropdown("Select Stat", weaponStats, "Damage", function(value)
+        selectedStat = value
+    end)
+
+    WeaponModSection:AddSlider("Stat Value", 0, 1000, 100, function(value)
+        statValue = math.floor(value)
+    end)
+
+    WeaponModSection:AddButton("Apply Stat Modification", function()
+        GameExploits:ModifyWeaponStats(selectedStat, statValue)
+        Notifications:Success("Weapon Modifier", "Set " .. selectedStat .. " to " .. statValue, 3)
+    end)
+
+    WeaponModSection:AddButton("Reset All Stats", function()
+        for _, stat in ipairs(weaponStats) do
+            GameExploits:ModifyWeaponStats(stat, 0) -- 0 will likely reset to default
+        end
+        Notifications:Success("Weapon Modifier", "Reset all weapon stats to default", 3)
+    end)
+
+    -- Melee Exploits
+    local MeleeSection = ExploitsTab:CreateSection("Melee Exploits")
+    MeleeSection:AddToggle("No Melee Cooldown", false, function(value)
+        GameExploits:SetMeleeCombo(value)
+        if value then
+            Notifications:Info("Melee Exploit", "Melee cooldown removed", 3)
+        else
+            Notifications:Info("Melee Exploit", "Melee cooldown restored", 3)
+        end
+    end)
+
+    MeleeSection:AddButton("Dupe Knife/Sword", function()
+        -- Try to dupe melee weapons
+        GameExploits:DupeItem("Knife", 1)
+        GameExploits:DupeItem("Sword", 1)
+        GameExploits:DupeItem("Melee", 1)
+        Notifications:Info("Melee Duping", "Attempting to dupe melee weapons...", 3)
+    end)
+
     -- Case Purchasing Section
     local CasePurchaseSection = ExploitsTab:CreateSection("Case Purchasing (No Currency)")
     
@@ -1006,6 +1085,120 @@ function loadMainScript()
         end
     end)
     
+    -- Sniper Duels Specialized Features
+    local SniperDuelsSpecializedSection = ExploitsTab:CreateSection("Sniper Duels Specialized")
+
+    SniperDuelsSpecializedSection:AddToggle("Auto Open Cases", false, function(value)
+        if SniperDuels then
+            SniperDuels:SetAutoOpenCases(value)
+            if value then
+                Notifications:Info("Sniper Duels", "Auto case opening enabled", 3)
+            else
+                Notifications:Info("Sniper Duels", "Auto case opening disabled", 3)
+            end
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddSlider("Case Open Speed", 0.1, 10, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.CaseOpenSpeed = value
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddToggle("Auto Dupe Skins", false, function(value)
+        if SniperDuels then
+            SniperDuels:SetAutoDupeSkins(value)
+            if value then
+                Notifications:Info("Sniper Duels", "Auto skin duplication enabled", 3)
+            else
+                Notifications:Info("Sniper Duels", "Auto skin duplication disabled", 3)
+            end
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddSlider("Skin Dupe Amount", 1, 100, 1, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.SkinDupeAmount = math.floor(value)
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddToggle("Enhanced Weapon Stats", false, function(value)
+        if SniperDuels then
+            SniperDuels:SetEnhancedStats(value)
+            if value then
+                Notifications:Info("Sniper Duels", "Weapon stats enhanced", 3)
+            else
+                Notifications:Info("Sniper Duels", "Weapon stats reset", 3)
+            end
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddSlider("Stat Boost Amount", 0, 500, 100, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.StatBoostAmount = value
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddToggle("Melee Exploit", false, function(value)
+        if SniperDuels then
+            SniperDuels:SetMeleeExploit(value)
+            if value then
+                Notifications:Info("Sniper Duels", "Melee exploit enabled", 3)
+            else
+                Notifications:Info("Sniper Duels", "Melee exploit disabled", 3)
+            end
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddToggle("No Melee Cooldown", false, function(value)
+        if SniperDuels then
+            SniperDuels.Settings.NoMeleeCooldown = value
+            if value then
+                Notifications:Info("Sniper Duels", "Melee cooldown removed", 3)
+            else
+                Notifications:Info("Sniper Duels", "Melee cooldown restored", 3)
+            end
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddToggle("Auto Farm", false, function(value)
+        if SniperDuels then
+            SniperDuels:SetAutoFarm(value)
+            if value then
+                Notifications:Info("Sniper Duels", "Auto farming enabled", 3)
+            else
+                Notifications:Info("Sniper Duels", "Auto farming disabled", 3)
+            end
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddDropdown("Farm Method", {"Kills", "XP", "Coins"}, "Kills", function(value)
+        if SniperDuels then
+            SniperDuels.Settings.FarmMethod = value
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddButton("Open All Cases (x1)", function()
+        if SniperDuels then
+            for _, caseType in ipairs(SniperDuels.CaseTypes) do
+                SniperDuels:OpenCase(caseType)
+                wait(0.5)
+            end
+            Notifications:Success("Sniper Duels", "Opened all cases!", 3)
+        end
+    end)
+
+    SniperDuelsSpecializedSection:AddButton("Dupe All Skins (x1)", function()
+        if SniperDuels then
+            local skins = SniperDuels:GetDetectedSkins()
+            for _, skinName in ipairs(skins) do
+                SniperDuels:DupeSkin(skinName, 1)
+                wait(0.1)
+            end
+            Notifications:Success("Sniper Duels", "Duped all skins!", 3)
+        end
+    end)
+
     -- Config Tab
     ConfigManager:Initialize()
     
