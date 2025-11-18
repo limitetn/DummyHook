@@ -8,7 +8,8 @@ local ThemeManager = {
     CustomTheme = nil,
     RGBEnabled = false,
     RGBSpeed = 1,
-    Themes = {}
+    Themes = {},
+    Initialized = false
 }
 
 local TweenService = game:GetService("TweenService")
@@ -241,6 +242,19 @@ function ThemeManager:ImportTheme(name, themeString)
     end
     
     return false
+end
+
+-- Initialize the ThemeManager
+function ThemeManager:Initialize()
+    if self.Initialized then return true end
+    
+    -- Set up default theme if none selected
+    if not self.Themes[self.CurrentTheme] then
+        self.CurrentTheme = "Skeet"
+    end
+    
+    self.Initialized = true
+    return true
 end
 
 return ThemeManager

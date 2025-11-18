@@ -587,4 +587,11 @@ function Aimbot:SetAimAssist(value)
     self.Settings.AimAssist = value
 end
 
+-- Initialize Aimbot
+function Aimbot:Initialize()
+    -- Set up any initial state or connections
+    print("[Aimbot] Initialized")
+    return true
+end
+
 return Aimbot

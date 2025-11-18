@@ -279,23 +279,48 @@ local function LoadMainScript()
     safeInitialize(GameExploits)
     safeInitialize(ConfigManager)
     safeInitialize(SniperDuels)
+    safeInitialize(ThemeManager)
+    safeInitialize(PlayerManager)
+    safeInitialize(AdvancedCheats)
+    safeInitialize(VisualEffects)
+    safeInitialize(CharCustomizer)
+    safeInitialize(SkinCustomizer)
+    safeInitialize(Misc)
 
     -- Initialize modules that have local Initialize functions
     if Aimbot and type(Aimbot) == "table" and Aimbot.Initialize and type(Aimbot.Initialize) == "function" then
-        Aimbot.Initialize()
+        local success, err = pcall(function()
+            Aimbot.Initialize()
+        end)
+        if not success then
+            warn("[DummyHook] Failed to initialize Aimbot: " .. tostring(err))
+        end
     end
 
     if ESP and type(ESP) == "table" and ESP.Initialize and type(ESP.Initialize) == "function" then
-        ESP.Initialize()
+        local success, err = pcall(function()
+            ESP.Initialize()
+        end)
+        if not success then
+            warn("[DummyHook] Failed to initialize ESP: " .. tostring(err))
+        end
     end
 
     if Crosshair and type(Crosshair) == "table" and Crosshair.Initialize and type(Crosshair.Initialize) == "function" then
-        Crosshair.Initialize()
+        local success, err = pcall(function()
+            Crosshair.Initialize()
+        end)
+        if not success then
+            warn("[DummyHook] Failed to initialize Crosshair: " .. tostring(err))
+        end
     end
 
-    if ThemeManager and type(ThemeManager) == "table" then
-        if ThemeManager.Initialize and type(ThemeManager.Initialize) == "function" then
-            ThemeManager:Initialize(Window)
+    if ThemeManager and type(ThemeManager) == "table" and ThemeManager.Initialize and type(ThemeManager.Initialize) == "function" then
+        local success, err = pcall(function()
+            ThemeManager:Initialize()
+        end)
+        if not success then
+            warn("[DummyHook] Failed to initialize ThemeManager: " .. tostring(err))
         end
     end
 

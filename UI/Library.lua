@@ -146,6 +146,107 @@ function Library:CreateWindow(config)
         end
     end)
     
+    -- Professional Intro Animation
+    local IntroOverlay = CreateElement("Frame", {
+        Name = "IntroOverlay",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(15, 15, 18),
+        BorderSizePixel = 0,
+        ZIndex = 1000,
+        Parent = ScreenGui
+    })
+    
+    local Logo = CreateElement("TextLabel", {
+        Name = "Logo",
+        Size = UDim2.new(0, 200, 0, 60),
+        Position = UDim2.new(0.5, -100, 0.4, -30),
+        BackgroundTransparency = 1,
+        Text = "DUMMYHOOK",
+        TextColor3 = Color3.fromRGB(130, 195, 65),
+        TextSize = 36,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Parent = IntroOverlay
+    })
+    
+    local Version = CreateElement("TextLabel", {
+        Name = "Version",
+        Size = UDim2.new(0, 100, 0, 20),
+        Position = UDim2.new(0.5, -50, 0.4, 40),
+        BackgroundTransparency = 1,
+        Text = "v1.0.0",
+        TextColor3 = Color3.fromRGB(180, 180, 180),
+        TextSize = 14,
+        Font = Enum.Font.Gotham,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Parent = IntroOverlay
+    })
+    
+    local LoadingDots = CreateElement("TextLabel", {
+        Name = "LoadingDots",
+        Size = UDim2.new(0, 100, 0, 20),
+        Position = UDim2.new(0.5, -50, 0.6, 0),
+        BackgroundTransparency = 1,
+        Text = "Loading",
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        TextSize = 16,
+        Font = Enum.Font.Gotham,
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Parent = IntroOverlay
+    })
+    
+    -- Animate loading dots
+    spawn(function()
+        local dots = 0
+        while IntroOverlay and IntroOverlay.Parent do
+            dots = (dots % 4) + 1
+            LoadingDots.Text = "Loading" .. string.rep(".", dots)
+            wait(0.5)
+        end
+    end)
+    
+    -- Animate intro sequence
+    spawn(function()
+        -- Fade in logo and version
+        for i = 100, 0, -5 do
+            if Logo and Logo.Parent then
+                Logo.TextTransparency = i / 100
+            end
+            if Version and Version.Parent then
+                Version.TextTransparency = i / 100
+            end
+            if LoadingDots and LoadingDots.Parent then
+                LoadingDots.TextTransparency = i / 100
+            end
+            wait(0.02)
+        end
+        
+        -- Wait for 2 seconds
+        wait(2)
+        
+        -- Fade out intro overlay
+        for i = 0, 100, 5 do
+            if IntroOverlay and IntroOverlay.Parent then
+                IntroOverlay.BackgroundTransparency = i / 100
+            end
+            if Logo and Logo.Parent then
+                Logo.TextTransparency = i / 100
+            end
+            if Version and Version.Parent then
+                Version.TextTransparency = i / 100
+            end
+            if LoadingDots and LoadingDots.Parent then
+                LoadingDots.TextTransparency = i / 100
+            end
+            wait(0.02)
+        end
+        
+        -- Destroy intro overlay
+        if IntroOverlay and IntroOverlay.Parent then
+            IntroOverlay:Destroy()
+        end
+    end)
+    
     -- Main Frame
     local MainFrame = CreateElement("Frame", {
         Name = "MainFrame",

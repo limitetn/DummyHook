@@ -411,4 +411,11 @@ function ESP:SetTeamCheck(value)
     self.Settings.TeamCheck = value
 end
 
+-- Initialize ESP
+function ESP:Initialize()
+    -- Set up any initial state or connections
+    print("[ESP] Initialized")
+    return true
+end
+
 return ESP

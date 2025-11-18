@@ -533,4 +533,11 @@ function Crosshair:Create()
     CreateCrosshair()
 end
 
+-- Initialize Crosshair
+function Crosshair:Initialize()
+    -- Set up any initial state or connections
+    print("[Crosshair] Initialized")
+    return true
+end
+
 return Crosshair
